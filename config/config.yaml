@@ -1,0 +1,12 @@
+Train_config: 
+  batch_size: 32
+  epochs: 100
+  learning_rate: 0.001
+ 
+
+ Paths : 
+  train_hr :
+  val_hr : 
+  dataset :
+
+  # Path: config/config.yaml
