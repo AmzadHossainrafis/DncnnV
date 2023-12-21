@@ -67,31 +67,6 @@ def train(model, train_dataloader, val_dataloader, criterion, optimizer, epochs=
             torch.save(model.state_dict(), r"C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt/DncNN_{}.pth".format(today_data_time))
             print("Model Saved")
 
-
-
-    if epoch % 10 == 0:
-        #make predincton on val se 
-        model.eval() 
-        with torch.no_grad():
-            for idx, (hr, lr) in enumerate(val_dataloader):
-                hr = hr.to("cuda")
-                lr = lr.to("cuda")
-
-                sr = model(lr)
-                loss = criterion(sr, hr)
-                val_loss_per_epoch.append(loss.item())
-                if idx % 10 == 0:
-                    #sub plot input image , target image and predicted image 
-                    fig, ax = plt.subplots(1,3) 
-                    ax[0].imshow(lr[0].cpu().permute(1,2,0).numpy())
-                    ax[1].imshow(hr[0].cpu().permute(1,2,0).numpy())
-                    ax[2].imshow(sr[0].cpu().permute(1,2,0).numpy())
-                    plt.show()
-                    #save 
-                    plt.savefig(r'C:\Users\Amzad\Desktop\Dncnn\artifact\results\result_{}_{}.png'.format(epoch, idx))
-                    plt.close()
-
-
         torch.save(model.state_dict(), f"model_{epoch+1}.pth")
     return train_loss, val_loss
 
