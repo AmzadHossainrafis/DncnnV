@@ -102,6 +102,4 @@ if __name__ == "__main__":
     plt.plot(val_loss, label="val loss")
     plt.legend()
     plt.show()
-
-
-    torch.save(model.state_dict(), r"C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt/model_mv2-100.pth")
+    torch.save(model.state_dict(), r"C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt/model_DncNN_{}.pth".format(today_data_time))
