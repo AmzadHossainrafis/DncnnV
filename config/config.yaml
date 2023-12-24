@@ -1,13 +1,18 @@
+#Path: config/config.yaml
 Train_config: 
   batch_size: 32
   epochs: 100
   learning_rate: 0.001
  
 
- Paths : 
-  train_hr :
-  val_hr : 
-  dataset :
-  log_dir : 
+Paths : 
+  train_hr : C:\Users\Amzad\Desktop\Dncnn\dataset/train/HR/
+  val_hr :  C:\Users\Amzad\Desktop\Dncnn\dataset/val/HR/
+  dataset : C:\Users\Amzad\Desktop\Dncnn\dataset/
+  log_dir : C:\Users\Amzad\Desktop\Dncnn\logs/
 
-  # Path: config/config.yaml
+transform:
+  train: 
+    - blur: 
+        p: 1
+        limit: 3
