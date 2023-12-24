@@ -3,4 +3,6 @@ torchvision
 Pillow 
 matplotlib 
 albumentations
+yaml
+
 ```
