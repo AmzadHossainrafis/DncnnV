@@ -8,5 +8,6 @@ Train_config:
   train_hr :
   val_hr : 
   dataset :
+  log_dir : 
 
   # Path: config/config.yaml

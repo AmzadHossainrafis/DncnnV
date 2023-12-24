@@ -4,6 +4,7 @@ import os
 import matplotlib.pyplot as plt
 import tqdm 
 import datetime as dt 
+import torch.optim.lr_scheduler as lr_scheduler
 
 today_data_time = dt.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") 
 
@@ -20,19 +21,31 @@ val_hr_dir = r'G:\m\val\hr/'
 list_of_files = os.listdir(hr_dir) 
 
 
-train_dataloader = DataLoader(hr_dir, batch_size=16, shuffle=True, num_workers=4, transform=True) 
-val_dataloader = DataLoader(val_hr_dir, batch_size=16, shuffle=True, num_workers=4, transform=True) 
+train_dataloader = DataLoader(hr_dir, batch_size=32, shuffle=True, num_workers=4, transform=True) 
+val_dataloader = DataLoader(val_hr_dir, batch_size=32, shuffle=True, num_workers=4, transform=True) 
+
+
+import pytorch_ssim 
+
+def ssim_loss(sr, hr):
+    return (1 - pytorch_ssim.ssim(sr, hr))
+
+
+from pytorch_msssim import ssim, ms_ssim, SSIM, MS_SSIM
+ssim_module = SSIM(data_range=1.0, size_average=True, channel=3)
+
 
 
 
 model = DnCNN().to("cuda") 
-criterion = nn.MSELoss()
+criterion = ssim_module
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 
 def train(model, train_dataloader, val_dataloader, criterion, optimizer, epochs=100):
     train_loss = []
     val_loss = []
+
     for epoch in range(epochs):
         model.train()
         train_loss_per_epoch = []
@@ -63,11 +76,11 @@ def train(model, train_dataloader, val_dataloader, criterion, optimizer, epochs=
         print(f"Epoch: {epoch+1} Val Loss: {np.mean(val_loss_per_epoch)}")
 
     #compare val loss and train loss  thn save the model 
-        if val_loss[-1] == min(val_loss):
-            torch.save(model.state_dict(), r"C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt/DncNN_{}.pth".format(today_data_time))
+        if val_loss[-1] >= min(val_loss):
+            torch.save(model.state_dict(), r"C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt/DncNN_ssim_loss_{}.pth".format(today_data_time))
             print("Model Saved")
 
-        torch.save(model.state_dict(), f"model_{epoch+1}.pth")
+        #torch.save(model.state_dict(), f"model_{epoch+1}.pth")
     return train_loss, val_loss
 
 
@@ -77,4 +90,4 @@ if __name__ == "__main__":
     plt.plot(val_loss, label="val loss")
     plt.legend()
     plt.show()
-    torch.save(model.state_dict(), r"C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt/model_DncNN_{}.pth".format(today_data_time))
+    #torch.save(model.state_dict(), r"C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt/model_DncNN_{}.pth".format(today_data_time))

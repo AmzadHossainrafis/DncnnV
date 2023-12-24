@@ -1,4 +1,6 @@
-torch 
-torchvision
+torch
+torchvision 
 Pillow 
 matplotlib 
+albumentations
+```

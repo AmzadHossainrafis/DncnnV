@@ -10,7 +10,7 @@ import albumentations as A
 
 t2= A.Compose([
     #reduce the brightness of images to make low light images 
-    A.Blur(p=1, blur_limit=3),
+    A.Blur(p=1, blur_limit=(3, 7), always_apply=False, p_mode=0.5),
 ])
 
 
