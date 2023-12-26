@@ -4,5 +4,6 @@ Pillow
 matplotlib 
 albumentations
 yaml
+numpy 
 
 ```
