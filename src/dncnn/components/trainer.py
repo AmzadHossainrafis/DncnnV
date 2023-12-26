@@ -1,93 +1,82 @@
-from dataloader import * 
-from model import * 
-import os 
-import matplotlib.pyplot as plt
-import tqdm 
+
+from tqdm import tqdm
 import datetime as dt 
-import torch.optim.lr_scheduler as lr_scheduler
+import matplotlib.pyplot as plt
+from dncnn.components.dataloader import * 
+from dncnn.components.model import * 
+import warnings
+from tqdm import tqdm
+import numpy as np
 
 today_data_time = dt.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") 
-
-#remove warnings
-import warnings
 warnings.filterwarnings("ignore")
+class Trainer:
+    def __init__(self, model, train_dataloader, val_dataloader, criterion, optimizer, epochs=100):
+        self.model = model
+        self.train_dataloader = train_dataloader
+        self.val_dataloader = val_dataloader
+        self.criterion = criterion
+        self.optimizer = optimizer
+        self.epochs = epochs
 
-
-
-
-
-hr_dir =r'G:\m\train\hr/'
-val_hr_dir = r'G:\m\val\hr/'
-list_of_files = os.listdir(hr_dir) 
-
-
-train_dataloader = DataLoader(hr_dir, batch_size=32, shuffle=True, num_workers=4, transform=True) 
-val_dataloader = DataLoader(val_hr_dir, batch_size=32, shuffle=True, num_workers=4, transform=True) 
-
-
-import pytorch_ssim 
-
-def ssim_loss(sr, hr):
-    return (1 - pytorch_ssim.ssim(sr, hr))
-
-
-from pytorch_msssim import ssim, ms_ssim, SSIM, MS_SSIM
-ssim_module = SSIM(data_range=1.0, size_average=True, channel=3)
-
-
-
-
-model = DnCNN().to("cuda") 
-criterion = ssim_module
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-
-
-def train(model, train_dataloader, val_dataloader, criterion, optimizer, epochs=100):
-    train_loss = []
-    val_loss = []
-
-    for epoch in range(epochs):
-        model.train()
+    def train_epoch(self, epoch):
+        self.model.train()
         train_loss_per_epoch = []
-        for idx, (hr, lr) in enumerate(train_dataloader):
+        train_ = tqdm(enumerate(self.train_dataloader), total=len(self.train_dataloader), leave=False)
+        for idx, (hr, lr) in train_:
             hr = hr.to("cuda")
             lr = lr.to("cuda")
 
-            optimizer.zero_grad()
-            sr = model(lr)
-            loss = criterion(sr, hr)
+            self.optimizer.zero_grad()
+            sr = self.model(lr)
+            loss = self.criterion(sr, hr)
             loss.backward()
-            optimizer.step()
+            self.optimizer.step()
             train_loss_per_epoch.append(loss.item())
-            print(f"Epoch: {epoch+1} Iter: {idx+1} Loss: {loss.item()}")
-        train_loss.append(np.mean(train_loss_per_epoch))
-        print(f"Epoch: {epoch+1} Train Loss: {np.mean(train_loss_per_epoch)}")
+            train_.set_description(f"Epoch: {epoch+1} Iter: {idx+1} Loss: {loss.item()}")
+            train_.set_postfix(loss=loss.item())
+        return np.mean(train_loss_per_epoch)
 
-        model.eval()
+    def validate_epoch(self, epoch):
+        self.model.eval()
         val_loss_per_epoch = []
-        for idx, (hr, lr) in enumerate(val_dataloader):
-            hr = hr.to("cuda")
-            lr = lr.to("cuda")
+        val_bar = tqdm(enumerate(self.val_dataloader), total=len(self.val_dataloader), leave=False)
+        with torch.no_grad():
+            for idx, (hr, lr) in val_bar:
+                hr = hr.to("cuda")
+                lr = lr.to("cuda")
 
-            sr = model(lr)
-            loss = criterion(sr, hr)
-            val_loss_per_epoch.append(loss.item())
-        val_loss.append(np.mean(val_loss_per_epoch))
-        print(f"Epoch: {epoch+1} Val Loss: {np.mean(val_loss_per_epoch)}")
+                sr = self.model(lr)
+                loss = self.criterion(sr, hr)
+                val_loss_per_epoch.append(loss.item())
+        return np.mean(val_loss_per_epoch)
 
-    #compare val loss and train loss  thn save the model 
-        if val_loss[-1] >= min(val_loss):
-            torch.save(model.state_dict(), r"C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt/DncNN_ssim_loss_{}.pth".format(today_data_time))
-            print("Model Saved")
+    def train(self):
+        train_loss = []
+        val_loss = []
+        best_val_loss = float('inf')
 
-        #torch.save(model.state_dict(), f"model_{epoch+1}.pth")
-    return train_loss, val_loss
+        for epoch in range(self.epochs):
+            train_loss_per_epoch = self.train_epoch(epoch)
+            val_loss_per_epoch = self.validate_epoch(epoch)
 
+            train_loss.append(train_loss_per_epoch)
+            val_loss.append(val_loss_per_epoch)
 
-if __name__ == "__main__":
-    train_loss, val_loss = train(model, train_dataloader, val_dataloader, criterion, optimizer, epochs=50)
-    plt.plot(train_loss, label="train loss")
-    plt.plot(val_loss, label="val loss")
-    plt.legend()
-    plt.show()
-    #torch.save(model.state_dict(), r"C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt/model_DncNN_{}.pth".format(today_data_time))
+            print(f"Epoch: {epoch+1} Train Loss: {train_loss_per_epoch}")
+            print(f"Epoch: {epoch+1} Val Loss: {val_loss_per_epoch}")
+
+            if val_loss_per_epoch < best_val_loss:
+                best_val_loss = val_loss_per_epoch
+                torch.save(self.model.state_dict(), f"model_best.pth")
+                print("Model Saved")
+
+        return train_loss, val_loss
+    
+    def plot_loss(self, train_loss, val_loss):
+        plt.plot(train_loss, label="Train Loss")
+        plt.plot(val_loss, label="Val Loss")
+        plt.legend()
+        plt.savefig(f"loss_plot_{today_data_time}.png")
+        plt.show()
+        plt.close()
