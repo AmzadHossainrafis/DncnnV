@@ -2,19 +2,7 @@ import torch
 import numpy as np
 import os
 from PIL import Image
-from pathlib import Path
-from transform import t
-import albumentations as A 
-
-
-
-t2= A.Compose([
-    #reduce the brightness of images to make low light images 
-    A.Blur(p=1, blur_limit=(3, 7), always_apply=False, p_mode=0.5),
-])
-
-
-
+from dncnn.components.transform import *
 
 
 class DataLoader(torch.utils.data.Dataset):
@@ -24,9 +12,9 @@ class DataLoader(torch.utils.data.Dataset):
         args: 
             hr_dir: path to the high resolution images
             batch_size: batch size
-            shuffle: shuffle the dataset
+            shuffle: shuffle the dataset (default: True)
             num_workers: number of workers to load the data
-            transform: whether to apply the transformation or not
+            transform: whether to apply the transformation or not (default: True)
 
         return: 
             hr: high resolution image
@@ -57,6 +45,14 @@ class DataLoader(torch.utils.data.Dataset):
     
 
     def __getitem__(self, idx):
+        '''
+        summary :
+            get the hr and lr images in the batch size of the given batch size.
+
+        return :
+            hr : high resolution image
+            lr : low resolution image
+        '''
         img_list = sorted(os.listdir(self.high_reg_img))
         hr = []
         lr = []
@@ -71,10 +67,6 @@ class DataLoader(torch.utils.data.Dataset):
                 if self.transform:
                     lr_img = t2(image=hr_img)['image']
 
-                
-                # hr=np.array(hr.append(hr_img.transpose(2,0,1)))
-                # lr=np.array(lr.append(lr_img.transpose(2,0,1)))
-                    
                 hr.append(hr_img.transpose(2,0,1))
                 lr.append(lr_img.transpose(2,0,1))
             hr = np.array(hr)
