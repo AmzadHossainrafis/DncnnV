@@ -5,6 +5,18 @@ import torch.nn as nn
 
 
 class DnCNN(nn.Module):
+    '''
+    summary :
+        DnCNN model for the super resolution model
+    args :
+        channels : number of channels (default : 64)
+        num_of_layers : number of layers (default : 17)
+    return :
+        out : output of the model
+
+    
+    '''
+
     def __init__(self, channels=64, num_of_layers=17):
         super(DnCNN, self).__init__()
         kernel_size = 3
@@ -30,9 +42,3 @@ class DnCNN(nn.Module):
 
 
 
-
-# if __name__ == "__main__":
-#    from torchsummary import summary
-#    model = DnCNN().to("cuda")
-#    summary(model, (3,256,256))
-   
