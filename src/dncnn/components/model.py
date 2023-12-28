@@ -1,6 +1,7 @@
 import torch 
 import torch.nn as nn 
-
+#import torch summary as summary
+from torchsummary import summary
 
 
 
@@ -33,6 +34,8 @@ class DnCNN(nn.Module):
 
         layers.append(nn.Conv2d(in_channels=channels, out_channels=3, kernel_size=kernel_size, padding=padding, bias=False))
 
+        conv_transpose= nn.ConvTranspose2d(3, 3, 3, stride=2, padding=1, output_padding=1)
+        layers.append(conv_transpose)
         self.dncnn = nn.Sequential(*layers)
 
     def forward(self, x):
@@ -41,4 +44,6 @@ class DnCNN(nn.Module):
 
 
 
-
+# if __name__ == "__main__":
+#     model = DnCNN().to("cuda")
+#     summary(model, (3, 128, 128))
