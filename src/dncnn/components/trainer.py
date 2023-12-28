@@ -80,3 +80,14 @@ class Trainer:
         plt.savefig(f"loss_plot_{today_data_time}.png")
         plt.show()
         plt.close()
+
+
+if __name__ == "__main__":
+    train_dataloader = DataLoader(r"G:\m\train\hr/", batch_size=16, shuffle=True, num_workers=4, transform=True)
+    val_dataloader = DataLoader(r"G:\m\val\hr/", batch_size=16, shuffle=True, num_workers=4, transform=True)
+    model = DnCNN().to("cuda")
+    criterion = nn.MSELoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+    trainer = Trainer(model, train_dataloader, val_dataloader, criterion, optimizer, epochs=100)
+    train_loss, val_loss = trainer.train()
+    trainer.plot_loss(train_loss, val_loss)
