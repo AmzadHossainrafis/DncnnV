@@ -72,12 +72,12 @@ class Trainer:
         self.model.train()
         train_loss_per_epoch = []
         train_ = tqdm(enumerate(self.train_dataloader), total=len(self.train_dataloader), leave=False)
-        for idx, (hr, lr) in train_:
+        for idx, (lr, hr) in train_:
             hr = hr.to("cuda")
             lr = lr.to("cuda")
             self.optimizer.zero_grad()
-            sr = self.model(hr)
-            loss = self.criterion(sr,lr)
+            sr = self.model(lr)
+            loss = self.criterion(sr,hr)
             loss.backward()
             self.optimizer.step()
             train_loss_per_epoch.append(loss.item())
@@ -90,7 +90,7 @@ class Trainer:
         val_loss_per_epoch = []
         val_bar = tqdm(enumerate(self.val_dataloader), total=len(self.val_dataloader), leave=False)
         with torch.no_grad():
-            for idx, (hr, lr) in val_bar:
+            for idx, (lr, hr) in val_bar:
                 hr = hr.to("cuda")
                 lr = lr.to("cuda")
 
@@ -111,8 +111,8 @@ class Trainer:
             train_loss.append(train_loss_per_epoch)
             val_loss.append(val_loss_per_epoch)
 
-            print(f"Epoch: {epoch+1} Train Loss: {train_loss_per_epoch}")
-            print(f"Epoch: {epoch+1} Val Loss: {val_loss_per_epoch}")
+            print(f"Epoch: {epoch+1} Train Loss: {train_loss_per_epoch} , Val Loss: {val_loss_per_epoch}")
+            #print(f"Epoch: {epoch+1} Val Loss: {val_loss_per_epoch}")
 
             if val_loss_per_epoch < best_val_loss:
                 best_val_loss = val_loss_per_epoch
