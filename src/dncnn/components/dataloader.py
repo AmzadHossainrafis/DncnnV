@@ -18,34 +18,49 @@ t1 = A.Compose([
 
 
 class DataLoader(torch.utils.data.Dataset):
+
+    """
+    A class used to load and preprocess datasets for machine learning models.
+
+    ...
+
+    Attributes
+    ----------
+    dataset : torch.utils.data.Dataset
+        the dataset to be loaded
+    batch_size : int
+        the number of samples per batch
+    shuffle : bool
+        whether to shuffle the data every epoch
+    num_workers : int
+        the number of subprocesses to use for data loading
+
+    Methods
+    -------
+    __iter__()
+        Allows the DataLoader to be iterable. Returns batches of data.
+    __len__()
+        Returns the number of batches.
+    __getitem__(idx)
+        Returns the data at the given index.Make batches of data.
+
+    """
     def __init__(self, hr_dir, batch_size=16, shuffle=True, num_workers=4,transform=True):
 
         """
-        args: 
-            hr_dir: path to the high resolution images
-            batch_size: batch size
-            shuffle: shuffle the dataset (default: True)
-            num_workers: number of workers to load the data
-            transform: whether to apply the transformation or not (default: True)
+        Constructs all the necessary attributes for the DataLoader object.
 
-        return: 
-            hr: high resolution image
-            lr: low resolution image
-
-            lr.shape = (batch_size, 3, 128, 128)
-            hr.shape = (batch_size, 3, 256, 256)
-
-
-
-        summary : 
-
-        data loader for the super resolution model .It take the hr images 
-        and return the lr and hr images in the batch size of the given batch size.
-        
-        
-        
+        Parameters
+        ----------
+            dataset : torch.utils.data.Dataset
+                the dataset to be loaded
+            batch_size : int, optional
+                the number of samples per batch (default is 1)
+            shuffle : bool, optional
+                whether to shuffle the data every epoch (default is False)
+            num_workers : int, optional
+                the number of subprocesses to use for data loading (default is 0)
         """
-
         self.high_reg_img = hr_dir
         self.batch_size = batch_size
         self.shuffle = shuffle
@@ -56,6 +71,15 @@ class DataLoader(torch.utils.data.Dataset):
 
 
     def __len__(self):
+
+        """
+        Allows the DataLoader to be iterable. Returns batches of data.
+
+        Yields
+        ------
+        data
+            a batch of data
+        """
         return len(self.high_reg_img)//self.batch_size 
     
     
@@ -95,15 +119,15 @@ class DataLoader(torch.utils.data.Dataset):
 
         return lr,hr
     
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt 
-    from dncnn.components.transform import *
-    train_datalader = DataLoader(hr_dir=r"G:\m\train\hr/", batch_size=16, shuffle=True, num_workers=4,transform=True)
-    hr, lr = train_datalader.__getitem__(0)
-    fig, ax = plt.subplots(1,2)
-    ax[0].imshow(hr[0].permute(1,2,0).numpy().astype(np.uint8))
-    ax[1].imshow(lr[0].permute(1,2,0).numpy().astype(np.uint8))
-    plt.show()
+# if __name__ == "__main__":
+#     import matplotlib.pyplot as plt 
+#     from dncnn.components.transform import *
+#     train_datalader = DataLoader(hr_dir=r"G:\m\train\hr/", batch_size=16, shuffle=True, num_workers=4,transform=True)
+#     hr, lr = train_datalader.__getitem__(0)
+#     fig, ax = plt.subplots(1,2)
+#     ax[0].imshow(hr[0].permute(1,2,0).numpy().astype(np.uint8))
+#     ax[1].imshow(lr[0].permute(1,2,0).numpy().astype(np.uint8))
+#     plt.show()
 
 
 

@@ -6,19 +6,35 @@ from torchsummary import summary
 
 
 class DnCNN(nn.Module):
-    '''
-    summary :
-        DnCNN model for the super resolution model
-    args :
-        channels : number of channels (default : 64)
-        num_of_layers : number of layers (default : 17)
-    return :
-        out : output of the model
+    """
+        A class used to implement the DnCNN model for super resolution tasks.
 
-    
-    '''
+        ...
+
+        Attributes
+        ----------
+        channels : int
+            the number of channels in the convolutional layers (default is 64)
+        num_of_layers : int
+            the number of layers in the model (default is 17)
+
+        Methods
+        -------
+        forward(x)
+            Defines the computation performed at every call.
+    """
 
     def __init__(self, channels=64, num_of_layers=17):
+        """
+        Constructs all the necessary attributes for the DnCNN object.
+
+        Parameters
+        ----------
+            channels : int, optional
+                the number of channels in the convolutional layers (default is 64)
+            num_of_layers : int, optional
+                the number of layers in the model (default is 17)
+        """
         super(DnCNN, self).__init__()
         kernel_size = 3
         padding = 1
@@ -39,6 +55,19 @@ class DnCNN(nn.Module):
         self.dncnn = nn.Sequential(*layers)
 
     def forward(self, x):
+        """
+        Defines the computation performed at every call.
+
+        Parameters
+        ----------
+            x : torch.Tensor
+                the input tensor
+
+        Returns
+        -------
+        out : torch.Tensor
+            the output of the model
+        """
         out = self.dncnn(x)
         return out
 

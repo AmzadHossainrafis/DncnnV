@@ -11,7 +11,56 @@ import numpy as np
 today_data_time = dt.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") 
 warnings.filterwarnings("ignore")
 class Trainer:
+    """
+            A class used to train a PyTorch model.
+
+            ...
+
+            Attributes
+            ----------
+            model : torch.nn.Module
+                a PyTorch model to be trained
+            train_dataloader : torch.utils.data.DataLoader
+                a DataLoader providing the training data
+            val_dataloader : torch.utils.data.DataLoader
+                a DataLoader providing the validation data
+            criterion : torch.nn.modules.loss._Loss
+                the loss function
+            optimizer : torch.optim.Optimizer
+                the optimization algorithm
+            epochs : int
+                the number of epochs to train the model
+
+            Methods
+            -------
+            train_epoch(epoch)
+                Trains the model for one epoch and updates its parameters.
+            validate_epoch(epoch)
+                Evaluates the model on the validation data.
+                
+                train()
+                Trains the model for the specified number of epochs.
+    """
     def __init__(self, model, train_dataloader, val_dataloader, criterion, optimizer, epochs=100):
+
+        """
+        Constructs all the necessary attributes for the Trainer object.
+
+        Parameters
+        ----------
+            model : torch.nn.Module
+                a PyTorch model to be trained
+            train_dataloader : torch.utils.data.DataLoader
+                a DataLoader providing the training data
+            val_dataloader : torch.utils.data.DataLoader
+                a DataLoader providing the validation data
+            criterion : torch.nn.modules.loss._Loss
+                the loss function
+            optimizer : torch.optim.Optimizer
+                the optimization algorithm
+            epochs : int, optional
+                the number of epochs to train the model (default is 100)
+        """
         self.model = model
         self.train_dataloader = train_dataloader
         self.val_dataloader = val_dataloader
@@ -26,10 +75,9 @@ class Trainer:
         for idx, (hr, lr) in train_:
             hr = hr.to("cuda")
             lr = lr.to("cuda")
-
             self.optimizer.zero_grad()
-            sr = self.model(lr)
-            loss = self.criterion(sr, hr)
+            sr = self.model(hr)
+            loss = self.criterion(sr,lr)
             loss.backward()
             self.optimizer.step()
             train_loss_per_epoch.append(loss.item())
