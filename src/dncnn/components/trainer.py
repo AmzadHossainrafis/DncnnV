@@ -7,6 +7,11 @@ from dncnn.components.model import *
 import warnings
 from tqdm import tqdm
 import numpy as np
+import sys
+from dncnn.utils.logger import logger
+from dncnn.utils.exception import CustomException
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+
 
 today_data_time = dt.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") 
 warnings.filterwarnings("ignore")
@@ -41,7 +46,7 @@ class Trainer:
                 train()
                 Trains the model for the specified number of epochs.
     """
-    def __init__(self, model, train_dataloader, val_dataloader, criterion, optimizer, epochs=100):
+    def __init__(self, model, train_dataloader, val_dataloader, criterion,lr_scheduler, optimizer, epochs=100):
 
         """
         Constructs all the necessary attributes for the Trainer object.
@@ -66,6 +71,7 @@ class Trainer:
         self.val_dataloader = val_dataloader
         self.criterion = criterion
         self.optimizer = optimizer
+        self.lr_scheduler = lr_scheduler
         self.epochs = epochs
 
     def train_epoch(self, epoch):
@@ -105,12 +111,16 @@ class Trainer:
         best_val_loss = float('inf')
 
         for epoch in range(self.epochs):
-            train_loss_per_epoch = self.train_epoch(epoch)
-            val_loss_per_epoch = self.validate_epoch(epoch)
+            try:
+                train_loss_per_epoch = self.train_epoch(epoch)
+                val_loss_per_epoch = self.validate_epoch(epoch)
+            except Exception as e:
+                logger.error(f"Error in training {e}")
+                raise CustomException(e,sys)
 
             train_loss.append(train_loss_per_epoch)
             val_loss.append(val_loss_per_epoch)
-
+            self.lr_scheduler.step(val_loss_per_epoch)
             print(f"Epoch: {epoch+1} Train Loss: {train_loss_per_epoch} , Val Loss: {val_loss_per_epoch}")
             #print(f"Epoch: {epoch+1} Val Loss: {val_loss_per_epoch}")
 
@@ -118,6 +128,10 @@ class Trainer:
                 best_val_loss = val_loss_per_epoch
                 torch.save(self.model.state_dict(), f"model_best.pth")
                 print("Model Saved")
+                logger.info(f"Model Saved at {epoch} ")
+                logger.info(f"Epoch: {epoch+1} Train Loss: {train_loss_per_epoch} , Val Loss: {val_loss_per_epoch}")
+                logger.info(f'Current learning rate: {self.optimizer.param_groups[0]["lr"]}')
+
 
         return train_loss, val_loss
     
@@ -136,6 +150,7 @@ if __name__ == "__main__":
     model = DnCNN().to("cuda")
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
-    trainer = Trainer(model, train_dataloader, val_dataloader, criterion, optimizer, epochs=100)
+    lr_sch = ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10, verbose=True)
+    trainer = Trainer(model, train_dataloader, val_dataloader, criterion,lr_sch, optimizer, epochs=2)
     train_loss, val_loss = trainer.train()
     trainer.plot_loss(train_loss, val_loss)
