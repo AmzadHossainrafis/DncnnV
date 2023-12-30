@@ -1,30 +1,34 @@
-import torch 
-import torch.nn as nn 
-#import torch summary as summary
-from torchsummary import summary
+import torch.nn as nn
+from dncnn.utils.common import read_config
 
+config = read_config("../../../config/config.yaml")
+model_config = config["model_config"]
 
 
 class DnCNN(nn.Module):
     """
-        A class used to implement the DnCNN model for super resolution tasks.
+    A class used to implement the DnCNN model for super resolution tasks.
 
-        ...
+    ...
 
-        Attributes
-        ----------
-        channels : int
-            the number of channels in the convolutional layers (default is 64)
-        num_of_layers : int
-            the number of layers in the model (default is 17)
+    Attributes
+    ----------
+    channels : int
+        the number of channels in the convolutional layers (default is 64)
+    num_of_layers : int
+        the number of layers in the model (default is 17)
 
-        Methods
-        -------
-        forward(x)
-            Defines the computation performed at every call.
+    Methods
+    -------
+    forward(x)
+        Defines the computation performed at every call.
     """
 
-    def __init__(self, channels=64, num_of_layers=17):
+    def __init__(
+        self,
+        channels=model_config["start_channels"],
+        num_of_layers=model_config["depth"],
+    ):
         """
         Constructs all the necessary attributes for the DnCNN object.
 
@@ -40,17 +44,43 @@ class DnCNN(nn.Module):
         padding = 1
         layers = []
 
-        layers.append(nn.Conv2d(in_channels=3, out_channels=channels, kernel_size=kernel_size, padding=padding, bias=False))
+        layers.append(
+            nn.Conv2d(
+                in_channels=3,
+                out_channels=channels,
+                kernel_size=kernel_size,
+                padding=padding,
+                bias=False,
+            )
+        )
         layers.append(nn.ReLU(inplace=True))
 
-        for _ in range(num_of_layers-2):
-            layers.append(nn.Conv2d(in_channels=channels, out_channels=channels, kernel_size=kernel_size, padding=padding, bias=False))
+        for _ in range(num_of_layers - 2):
+            layers.append(
+                nn.Conv2d(
+                    in_channels=channels,
+                    out_channels=channels,
+                    kernel_size=kernel_size,
+                    padding=padding,
+                    bias=False,
+                )
+            )
             layers.append(nn.BatchNorm2d(channels))
             layers.append(nn.ReLU(inplace=True))
 
-        layers.append(nn.Conv2d(in_channels=channels, out_channels=3, kernel_size=kernel_size, padding=padding, bias=False))
+        layers.append(
+            nn.Conv2d(
+                in_channels=channels,
+                out_channels=3,
+                kernel_size=kernel_size,
+                padding=padding,
+                bias=False,
+            )
+        )
 
-        conv_transpose= nn.ConvTranspose2d(3, 3, 3, stride=2, padding=1, output_padding=1)
+        conv_transpose = nn.ConvTranspose2d(
+            3, 3, 3, stride=2, padding=1, output_padding=1
+        )
         layers.append(conv_transpose)
         self.dncnn = nn.Sequential(*layers)
 
@@ -70,7 +100,6 @@ class DnCNN(nn.Module):
         """
         out = self.dncnn(x)
         return out
-
 
 
 # if __name__ == "__main__":

@@ -2,17 +2,58 @@
 Train_config: 
   batch_size: 32
   epochs: 100
-  learning_rate: 0.001
- 
+  lr: 0.001
+  lr_scheduler: 
+    mode: 'min'
+    factor: 0.1
+    patience: 30
+    verbose: True
+
+  optimizer: adam
+  loss : mse
+
+
+Train_DL_config:
+  train_hr_dir: G:\muzzle\train\hr/
+  batch_size: 32
+  num_workers: 4
+  shuffle: True
+  transform: True
+
+Val_DL_config:
+  val_hr_dir: G:\muzzle\val\hr/
+  batch_size: 32
+  num_workers: 4
+  shuffle: False
+  transform: True 
+
 
 Paths : 
-  train_hr : C:\Users\Amzad\Desktop\Dncnn\dataset/train/HR/
-  val_hr :  C:\Users\Amzad\Desktop\Dncnn\dataset/val/HR/
   dataset : C:\Users\Amzad\Desktop\Dncnn\dataset/
   log_dir : C:\Users\Amzad\Desktop\Dncnn\logs/
+  model_ckpt: C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt/
+  figs: C:\Users\Amzad\Desktop\Dncnn\figs/
 
-transform:
-  train: 
-    - blur: 
-        p: 1
-        limit: 3
+Transform:
+  t1 :
+    p: 1
+    image_size: 256
+  t2 :
+    p: 1
+    image_size: 128
+    blur_limit: 
+      min: 3
+      max: 7
+  
+
+
+model_config : 
+  in_channels: 3
+  out_channels: 3
+  start_channels: 64
+  depth: 17
+
+
+
+
+  

@@ -1,20 +1,42 @@
-import torch 
+import torch
 import numpy as np
 import os
 from PIL import Image
 from dncnn.components.transform import *
+from dncnn.utils.common import read_config
+from dncnn.components.model import config
+
+# config = read_config('../../../config/config.yaml')
+transform_config = config["Transform"]
 
 
-t2 = A.Compose([
-    #reduce the brightness of images to make low light images 
-   
-    A.Blur(p=1, blur_limit=(3, 7), always_apply=False),
-    A.Resize(128, 128,  p=1),
-])
-t1 = A.Compose([
-    A.Resize(256, 256,  p=1),
-
-])
+t2 = A.Compose(
+    [
+        # reduce the brightness of images to make low light images
+        A.Blur(
+            p=transform_config["t2"]["p"],
+            blur_limit=(
+                transform_config["t2"]["blur_limit"]["min"],
+                transform_config["t2"]["blur_limit"]["max"],
+            ),
+            always_apply=False,
+        ),
+        A.Resize(
+            transform_config["t2"]["image_size"],
+            transform_config["t2"]["image_size"],
+            p=transform_config["t2"]["p"],
+        ),
+    ]
+)
+t1 = A.Compose(
+    [
+        A.Resize(
+            transform_config["t1"]["image_size"],
+            transform_config["t1"]["image_size"],
+            p=transform_config["t1"]["p"],
+        ),
+    ]
+)
 
 
 class DataLoader(torch.utils.data.Dataset):
@@ -45,8 +67,10 @@ class DataLoader(torch.utils.data.Dataset):
         Returns the data at the given index.Make batches of data.
 
     """
-    def __init__(self, hr_dir, batch_size=16, shuffle=True, num_workers=4,transform=True):
 
+    def __init__(
+        self, hr_dir, batch_size=16, shuffle=True, num_workers=4, transform=True
+    ):
         """
         Constructs all the necessary attributes for the DataLoader object.
 
@@ -65,13 +89,9 @@ class DataLoader(torch.utils.data.Dataset):
         self.batch_size = batch_size
         self.shuffle = shuffle
         self.num_workers = num_workers
-        self.transform = transform 
-
-
-
+        self.transform = transform
 
     def __len__(self):
-
         """
         Allows the DataLoader to be iterable. Returns batches of data.
 
@@ -80,19 +100,17 @@ class DataLoader(torch.utils.data.Dataset):
         data
             a batch of data
         """
-        return len(self.high_reg_img)//self.batch_size 
-    
-    
+        return len(self.high_reg_img) // self.batch_size
 
     def __getitem__(self, idx):
-        '''
+        """
         summary :
             get the hr and lr images in the batch size of the given batch size.
 
         return :
             hr : high resolution image
             lr : low resolution image
-        '''
+        """
         img_list = sorted(os.listdir(self.high_reg_img))
         hr = []
         lr = []
@@ -100,27 +118,27 @@ class DataLoader(torch.utils.data.Dataset):
         if self.shuffle:
             np.random.shuffle(img_list)
         if self.transform:
-            for i in range(idx*self.batch_size, (idx+1)*self.batch_size):
+            for i in range(idx * self.batch_size, (idx + 1) * self.batch_size):
                 hr_img = Image.open(self.high_reg_img + img_list[i])
                 hr_img = np.array(hr_img)
                 lr_img = hr_img.copy()
                 if self.transform:
-                    lr_img = t2(image=hr_img)['image']
-                    hr_img = t1(image=hr_img)['image']
+                    lr_img = t2(image=hr_img)["image"]
+                    hr_img = t1(image=hr_img)["image"]
 
-                hr.append(hr_img.transpose(2,0,1))
-                lr.append(lr_img.transpose(2,0,1))
+                hr.append(hr_img.transpose(2, 0, 1))
+                lr.append(lr_img.transpose(2, 0, 1))
             hr = np.array(hr)
             lr = np.array(lr)
-
 
             hr = torch.tensor(hr, dtype=torch.float32)
             lr = torch.tensor(lr, dtype=torch.float32)
 
-        return lr,hr
-    
+        return lr, hr
+
+
 # if __name__ == "__main__":
-#     import matplotlib.pyplot as plt 
+#     import matplotlib.pyplot as plt
 #     from dncnn.components.transform import *
 #     train_datalader = DataLoader(hr_dir=r"G:\m\train\hr/", batch_size=16, shuffle=True, num_workers=4,transform=True)
 #     hr, lr = train_datalader.__getitem__(0)
@@ -128,11 +146,3 @@ class DataLoader(torch.utils.data.Dataset):
 #     ax[0].imshow(hr[0].permute(1,2,0).numpy().astype(np.uint8))
 #     ax[1].imshow(lr[0].permute(1,2,0).numpy().astype(np.uint8))
 #     plt.show()
-
-
-
-
-
-
-
-
