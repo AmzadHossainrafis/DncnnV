@@ -1,7 +1,7 @@
 #Path: config/config.yaml
 Train_config: 
   batch_size: 32
-  epochs: 100
+  epochs: 2
   lr: 0.001
   lr_scheduler: 
     mode: 'min'
@@ -52,6 +52,7 @@ model_config :
   out_channels: 3
   start_channels: 64
   depth: 17
+  up_scale: 1
 
 
 
