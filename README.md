@@ -10,10 +10,13 @@ This is a PyTorch implementation of DNCnn for image denoising and deblurring. Dn
 
 main requirements of this project  is 
 1. python >= 3.6 
-2. pytorch >= 1.6 
+2. pytorch >= 1.6 (2.0 recommended)
 3. torchvision >= 0.7 
 
 please read through the pytorch installation guide [here](https://pytorch.org/get-started/locally/) to install pytorch and torchvision according to your system requirements. 
+
+## Propose model structures 
+![Alt text](figs/dncnnv_arh.png)
 
 
 
@@ -27,7 +30,7 @@ git clone <repo url>
 ```
 2. create conda environment 
 ```bash
-conda create -n <env name> python>=3.6 
+conda create -n <env name> python>=3.6 -y
 
 ```
 
@@ -88,27 +91,15 @@ dataset
 
 ## training 
 
-before training you can change the parameters in the config file according to your needs. please chang the directory paths accordingly if you are not following the above folder structure. 
+before training you can change the parameters in the config file according to your needs. please chang the directory paths accordingly in the config file.
 
 
 
 ```bash
-cd dncnn/pipline/
-python python train_pipeline.py 
+cd dncnn/componenets/
+python python trainer.py 
     
 ```
-
-
-
-## testing 
-
-```bash
-cd dncnn/pipline/
-python python test_pipeline.py 
-    
-```
-
-
 
 ## results
 
@@ -120,7 +111,7 @@ validation loss vs training loss
 demo testing results
 
 ## prediction 
-
+![Alt text](figs/prediction/dncnn_prediction_11.png)![Alt text](figs/prediction/dncnn_prediction_12.png)
 
 
 
