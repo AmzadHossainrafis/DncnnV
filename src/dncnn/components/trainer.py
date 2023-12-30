@@ -175,6 +175,13 @@ if __name__ == "__main__":
     train_DL_config = config["Train_DL_config"]
     val_DL_config = config["Val_DL_config"]
     lr_config = train_config["lr_scheduler"]
+    logger.info("--------------Starting the training----------------------------")
+    logger.info('Current time is : {}'.format(today_data_time))
+    logger.info('Train confing is : {}'.format(train_config))
+    logger.info('Train_DL_config is : {}'.format(train_DL_config))
+    logger.info('Val_DL_config is : {}'.format(val_DL_config))
+    logger.info('Lr_config is : {}'.format(lr_config))
+
 
     train_dataloader = DataLoader(
         train_DL_config["train_hr_dir"],
@@ -211,3 +218,5 @@ if __name__ == "__main__":
     )
     train_loss, val_loss = trainer.train()
     trainer.plot_loss(train_loss, val_loss)
+
+    logger.info("--------------Training is done----------------------------")

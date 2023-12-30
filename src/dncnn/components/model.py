@@ -28,6 +28,7 @@ class DnCNN(nn.Module):
         self,
         channels=model_config["start_channels"],
         num_of_layers=model_config["depth"],
+        up_scale=model_config["up_scale"],
     ):
         """
         Constructs all the necessary attributes for the DnCNN object.
@@ -77,11 +78,18 @@ class DnCNN(nn.Module):
                 bias=False,
             )
         )
-
-        conv_transpose = nn.ConvTranspose2d(
-            3, 3, 3, stride=2, padding=1, output_padding=1
-        )
-        layers.append(conv_transpose)
+        # for m in layers:
+        #     if isinstance(m, nn.Conv2d):
+        #         nn.init.kaiming_normal_(m.weight, nonlinearity="relu")
+        for i in range(up_scale):
+            conv_transpose = nn.ConvTranspose2d(
+                3, 3, 3, stride=2, padding=1, output_padding=1
+            )
+            layers.append(conv_transpose)
+        for m in layers:
+            if isinstance(m, nn.ConvTranspose2d):
+                nn.init.kaiming_normal_(m.weight, nonlinearity="relu")
+                
         self.dncnn = nn.Sequential(*layers)
 
     def forward(self, x):
