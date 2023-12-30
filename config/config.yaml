@@ -45,7 +45,7 @@ Transform:
       min: 3
       max: 7
   
-
+  seed: 42
 
 model_config : 
   in_channels: 3
