@@ -50,10 +50,10 @@ def plt_reults(val_dataloader):
     plt.show()
 
 
-def plot_val_data(val_dataloader):
+def plot_val_data(val_dataloader,model_dir):
     model = DnCNN().to("cuda")
     model.load_state_dict(
-        torch.load(r"C:\Users\Amzad\Desktop\Dncnn\src\dncnn\components\model_best.pth")
+        torch.load(model_dir)
     )
     model.eval()
 
