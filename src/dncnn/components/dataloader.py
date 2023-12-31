@@ -8,7 +8,7 @@ from dncnn.components.model import config
 
 # config = read_config('../../../config/config.yaml')
 transform_config = config["Transform"]
-
+seed = transform_config["seed"]
 
 t2 = A.Compose(
     [
