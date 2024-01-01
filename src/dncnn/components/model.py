@@ -86,9 +86,21 @@ class DnCNN(nn.Module):
                 3, 3, 3, stride=2, padding=1, output_padding=1
             )
             layers.append(conv_transpose)
+
+
+            
         for m in layers:
             if isinstance(m, nn.ConvTranspose2d):
                 nn.init.kaiming_normal_(m.weight, nonlinearity="relu")
+
+            elif isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, nonlinearity="relu")
+
+            elif isinstance(m, nn.BatchNorm2d):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+
+            
                 
         self.dncnn = nn.Sequential(*layers)
 
