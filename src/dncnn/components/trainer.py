@@ -9,6 +9,10 @@ import sys
 from dncnn.utils.logger import logger
 from dncnn.utils.exception import CustomException
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torchmetrics.image import StructuralSimilarityIndexMeasure
+
+
+
 
 train_config = config["Train_config"]
 path_config = config["Paths"]
@@ -85,6 +89,7 @@ class Trainer:
         self.optimizer = optimizer
         self.lr_scheduler = lr_scheduler
         self.epochs = epochs
+        self.ssim = StructuralSimilarityIndexMeasure().to("cuda")
 
     def train_epoch(self, epoch):
         self.model.train()
@@ -112,6 +117,7 @@ class Trainer:
     def validate_epoch(self, epoch):
         self.model.eval()
         val_loss_per_epoch = []
+        ssim_score = []
         val_bar = tqdm(
             enumerate(self.val_dataloader), total=len(self.val_dataloader), leave=False
         )
@@ -122,26 +128,31 @@ class Trainer:
                 sr = self.model(lr)
                 loss = self.criterion(sr, hr)
                 val_loss_per_epoch.append(loss.item())
-        return np.mean(val_loss_per_epoch)
+                ssim_score.append(self.ssim(sr, hr).item())
+                # print(f'ssim_score : {np.mean(ssim_score)}')
+                
+        return np.mean(val_loss_per_epoch) , np.mean(ssim_score)
 
     def train(self):
         train_loss = []
         val_loss = []
+        ssim_score = [] # Structural Similarity Index Measure
         best_val_loss = float("inf")
 
         for epoch in range(self.epochs):
             try:
                 train_loss_per_epoch = self.train_epoch(epoch)
-                val_loss_per_epoch = self.validate_epoch(epoch)
+                val_loss_per_epoch,ssim_value = self.validate_epoch(epoch)
             except Exception as e:
                 logger.error(f"Error in training {e}")
                 raise CustomException(e, sys)
 
             train_loss.append(train_loss_per_epoch)
             val_loss.append(val_loss_per_epoch)
+            ssim_score.append(ssim_value)
             self.lr_scheduler.step(val_loss_per_epoch)
             print(
-                f"Epoch: {epoch+1} Train Loss: {train_loss_per_epoch} , Val Loss: {val_loss_per_epoch}"
+                f"Epoch: {epoch+1} Train Loss: {train_loss_per_epoch} , Val Loss: {val_loss_per_epoch} , SSIM: {ssim_value}"
             )
             # print(f"Epoch: {epoch+1} Val Loss: {val_loss_per_epoch}")
 
@@ -156,11 +167,12 @@ class Trainer:
                 logger.info(
                     f"Epoch: {epoch+1} Train Loss: {train_loss_per_epoch} , Val Loss: {val_loss_per_epoch}"
                 )
+                logger.info((f'SSIM: {ssim_value}'))
                 logger.info(
                     f'Current learning rate: {self.optimizer.param_groups[0]["lr"]}'
                 )
 
-        return train_loss, val_loss
+        return train_loss, val_loss 
 
     def plot_loss(self, train_loss, val_loss):
         plt.plot(train_loss, label="Train Loss")
