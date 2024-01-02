@@ -1,12 +1,12 @@
 #Path: config/config.yaml
 Train_config: 
   batch_size: 32
-  epochs: 2
+  epochs: 300
   lr: 0.001
   lr_scheduler: 
     mode: 'min'
     factor: 0.1
-    patience: 30
+    patience: 10
     verbose: True
 
   optimizer: adam
@@ -15,18 +15,25 @@ Train_config:
 
 Train_DL_config:
   train_hr_dir: G:\muzzle\train\hr/
-  batch_size: 32
+  batch_size: 16
   num_workers: 4
   shuffle: True
   transform: True
 
 Val_DL_config:
   val_hr_dir: G:\muzzle\val\hr/
-  batch_size: 32
+  batch_size: 16
   num_workers: 4
   shuffle: False
   transform: True 
 
+
+Test_DL_config: 
+  test_hr_dir: G:\muzzle\test\hr/
+  batch_size: 32
+  num_workers: 4
+  shuffle: False
+  transform: True
 
 Paths : 
   dataset : C:\Users\Amzad\Desktop\Dncnn\dataset/
@@ -53,6 +60,10 @@ model_config :
   start_channels: 64
   depth: 17
   up_scale: 1
+  weight_initilization: False # weight initilization don't improve the performance val loss stack at 70.0
+
+
+
 
 
 
