@@ -12,6 +12,12 @@ seed = transform_config["seed"]
 
 t2 = A.Compose(
     [
+        A.Normalize(
+            mean=transform_config["normalization"]["mean"],
+            std=transform_config["normalization"]["std"],
+            max_pixel_value=255.0,
+            p=transform_config["t2"]["p"],  # apply probability 
+        ),
         # reduce the brightness of images to make low light images
         A.Blur(
             p=transform_config["t2"]["p"],
@@ -26,10 +32,26 @@ t2 = A.Compose(
             transform_config["t2"]["image_size"],
             p=transform_config["t2"]["p"],
         ),
+        # gaosianblur
+        # A.GaussianBlur(
+        #     p=transform_config["t2"]["p"],
+        #     blur_limit=(
+        #         transform_config["t2"]["blur_limit"]["min"],
+        #         transform_config["t2"]["blur_limit"]["max"],
+        #     ),
+        #     always_apply=False,
+        # ),
+        #normalize the images
+  
     ]
 )
 t1 = A.Compose(
-    [
+    [   A.Normalize(
+            mean=transform_config["normalization"]["mean"],
+            std=transform_config["normalization"]["std"],
+            max_pixel_value=255.0,
+            p=transform_config["t2"]["p"],  # apply probability 
+        ),
         A.Resize(
             transform_config["t1"]["image_size"],
             transform_config["t1"]["image_size"],

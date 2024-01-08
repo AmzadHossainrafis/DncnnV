@@ -8,13 +8,7 @@ from dncnn.components.model import DnCNN
 from PIL import Image
 
 
-hr_dir = r"G:\m\val\hr/"
-list_of_files = os.listdir(hr_dir)
-# test train split
-
-# train_list = list_of_files[:int(len(list_of_files)*0.8)]
-val_list = list_of_files[int(len(list_of_files) * 0.8) :]
-
+hr_dir = r"G:\muzzle\val\hr/"
 
 # train_dataloader = DataLoader(hr_dir, batch_size=16, shuffle=True, num_workers=4, transform=True)
 val_dataloader = DataLoader(
@@ -50,10 +44,10 @@ def plt_reults(val_dataloader):
     plt.show()
 
 
-def plot_val_data(val_dataloader,model_dir):
+def plot_val_data(val_dataloader):
     model = DnCNN().to("cuda")
     model.load_state_dict(
-        torch.load(model_dir)
+        torch.load(r'C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt\model_best.pth')
     )
     model.eval()
 
@@ -68,8 +62,8 @@ def plot_val_data(val_dataloader,model_dir):
     axarr[2].axis("off")
     # titel
     axarr[0].set_title("predicted")
-    axarr[1].set_title("Input")
-    axarr[2].set_title("Ground Truth")
+    axarr[1].set_title("ground truth")
+    axarr[2].set_title("input")
 
     axarr[1].imshow(lr[0].permute(1, 2, 0).numpy().astype(np.uint8))
     axarr[0].imshow(sr[0].permute(1, 2, 0).numpy().astype(np.uint8))
