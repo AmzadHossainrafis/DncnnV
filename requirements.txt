@@ -1,10 +1,6 @@
-torch
-torchvision 
 Pillow 
 matplotlib 
 albumentations
-yaml
+PyYAML
 numpy 
 torchmetrics
-
-```

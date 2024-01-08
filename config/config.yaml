@@ -1,12 +1,13 @@
 #Path: config/config.yaml
 Train_config: 
   batch_size: 32
-  epochs: 300
+  epochs: 200
   lr: 0.001
+  lr_sheduler: False
   lr_scheduler: 
     mode: 'min'
     factor: 0.1
-    patience: 10
+    patience: 20
     verbose: True
 
   optimizer: adam
@@ -15,7 +16,7 @@ Train_config:
 
 Train_DL_config:
   train_hr_dir: G:\muzzle\train\hr/
-  batch_size: 16
+  batch_size: 32
   num_workers: 4
   shuffle: True
   transform: True
@@ -51,8 +52,21 @@ Transform:
     blur_limit: 
       min: 3
       max: 7
-  
+  normalization:
+    mean :
+      - 0.485
+      - 0.456
+      - 0.406
+    std :
+      - 0.229
+      - 0.224
+      - 0.225
   seed: 42
+
+Test_config: 
+  model_path: C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt\Dncnn_best_2024-01-02-17-03-27.pth
+
+
 
 model_config : 
   in_channels: 3

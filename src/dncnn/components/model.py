@@ -1,5 +1,6 @@
 import torch.nn as nn
 from dncnn.utils.common import read_config
+from dncnn.utils.logger import logger
 
 config = read_config("../../../config/config.yaml")
 model_config = config["model_config"]
@@ -84,6 +85,7 @@ class DnCNN(nn.Module):
         #         nn.init.kaiming_normal_(m.weight, nonlinearity="relu")
 
         if weight_initilization : 
+            logger.info("Weight initilization is on")
             for i in range(up_scale):
                 conv_transpose = nn.ConvTranspose2d(
                     3, 3, 3, stride=2, padding=1, output_padding=1
@@ -93,13 +95,16 @@ class DnCNN(nn.Module):
 
             
             for m in layers:
+                logger.info("Weight initilization is on for layers")
                 if isinstance(m, nn.ConvTranspose2d):
                     nn.init.kaiming_normal_(m.weight, nonlinearity="relu")
 
                 elif isinstance(m, nn.Conv2d):
+                    logger.info("Weight initilization is on for conv2d layers")
                     nn.init.kaiming_normal_(m.weight, nonlinearity="relu")
 
                 elif isinstance(m, nn.BatchNorm2d):
+                    logger.info("Weight initilization is on for batchnorm layers")
                     nn.init.constant_(m.weight, 1)
                     nn.init.constant_(m.bias, 0)
 
