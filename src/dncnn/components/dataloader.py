@@ -161,8 +161,7 @@ class DataLoader(torch.utils.data.Dataset):
 
 # if __name__ == "__main__":
 #     import matplotlib.pyplot as plt
-#     from dncnn.components.transform import *
-#     train_datalader = DataLoader(hr_dir=r"G:\m\train\hr/", batch_size=16, shuffle=True, num_workers=4,transform=True)
+#     train_datalader = DataLoader(hr_dir=r"G:\muzzle\val\hr/", batch_size=16, shuffle=True, num_workers=4,transform=True)
 #     hr, lr = train_datalader.__getitem__(0)
 #     fig, ax = plt.subplots(1,2)
 #     ax[0].imshow(hr[0].permute(1,2,0).numpy().astype(np.uint8))

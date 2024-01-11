@@ -2,6 +2,7 @@ import torch.nn as nn
 from dncnn.utils.common import read_config
 from dncnn.utils.logger import logger
 
+
 config = read_config("../../../config/config.yaml")
 model_config = config["model_config"]
 
@@ -130,6 +131,26 @@ class DnCNN(nn.Module):
         return out
 
 
-# if __name__ == "__main__":
-#     model = DnCNN().to("cuda")
-#     summary(model, (3, 128, 128))
+
+
+class Unet: 
+    def __init__(self) -> None:
+        pass
+
+    def forward(self, x): 
+        pass
+
+
+class Resnet: 
+    def __init__(self) -> None:
+        pass
+
+    def forward(self, x): 
+        pass
+
+class Restored: 
+    def __init__(self) -> None:
+        pass
+
+    def forward(self, x): 
+        pass 
