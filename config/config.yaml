@@ -76,7 +76,7 @@ model_config :
   depth: 17
   up_scale: 1
   weight_initilization: True # weight initilization don't improve the performance val loss stack at 70.0
-
+  mood: train
 
 
 

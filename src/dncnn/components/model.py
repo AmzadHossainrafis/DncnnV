@@ -31,6 +31,7 @@ class DnCNN(nn.Module):
         channels=model_config["start_channels"],
         num_of_layers=model_config["depth"],
         up_scale=model_config["up_scale"],
+        mood=model_config["mood"],
         weight_initilization=model_config["weight_initilization"],
     ):
         """
@@ -84,6 +85,8 @@ class DnCNN(nn.Module):
         # for m in layers:
         #     if isinstance(m, nn.Conv2d):
         #         nn.init.kaiming_normal_(m.weight, nonlinearity="relu")
+        
+       
 
         if weight_initilization : 
             logger.info("Weight initilization is on")
@@ -94,7 +97,7 @@ class DnCNN(nn.Module):
                 layers.append(conv_transpose)
 
 
-            
+        if mood =='train':
             for m in layers:
                 logger.info("Weight initilization is on for layers")
                 if isinstance(m, nn.ConvTranspose2d):
