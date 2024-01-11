@@ -2,6 +2,7 @@ import torch.nn as nn
 from dncnn.utils.common import read_config
 from dncnn.utils.logger import logger
 
+
 config = read_config("../../../config/config.yaml")
 model_config = config["model_config"]
 
@@ -30,6 +31,7 @@ class DnCNN(nn.Module):
         channels=model_config["start_channels"],
         num_of_layers=model_config["depth"],
         up_scale=model_config["up_scale"],
+        mood=model_config["mood"],
         weight_initilization=model_config["weight_initilization"],
     ):
         """
@@ -83,6 +85,8 @@ class DnCNN(nn.Module):
         # for m in layers:
         #     if isinstance(m, nn.Conv2d):
         #         nn.init.kaiming_normal_(m.weight, nonlinearity="relu")
+        
+       
 
         if weight_initilization : 
             logger.info("Weight initilization is on")
@@ -93,7 +97,7 @@ class DnCNN(nn.Module):
                 layers.append(conv_transpose)
 
 
-            
+        if mood =='train':
             for m in layers:
                 logger.info("Weight initilization is on for layers")
                 if isinstance(m, nn.ConvTranspose2d):
@@ -130,6 +134,26 @@ class DnCNN(nn.Module):
         return out
 
 
-# if __name__ == "__main__":
-#     model = DnCNN().to("cuda")
-#     summary(model, (3, 128, 128))
+
+
+class Unet: 
+    def __init__(self) -> None:
+        pass
+
+    def forward(self, x): 
+        pass
+
+
+class Resnet: 
+    def __init__(self) -> None:
+        pass
+
+    def forward(self, x): 
+        pass
+
+class Restored: 
+    def __init__(self) -> None:
+        pass
+
+    def forward(self, x): 
+        pass 

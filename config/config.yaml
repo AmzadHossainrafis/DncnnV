@@ -69,13 +69,14 @@ Test_config:
 
 
 model_config : 
+  model_name: Dncnn
   in_channels: 3
   out_channels: 3
   start_channels: 64
   depth: 17
   up_scale: 1
-  weight_initilization: False # weight initilization don't improve the performance val loss stack at 70.0
-
+  weight_initilization: True # weight initilization don't improve the performance val loss stack at 70.0
+  mood: train
 
 
 
