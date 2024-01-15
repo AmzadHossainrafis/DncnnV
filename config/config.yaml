@@ -48,7 +48,7 @@ Transform:
     image_size: 256
   t2 :
     p: 1
-    image_size: 128
+    image_size: 256
     blur_limit: 
       min: 3
       max: 7

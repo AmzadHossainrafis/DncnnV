@@ -1,6 +1,9 @@
 import torch.nn as nn
 from dncnn.utils.common import read_config
 from dncnn.utils.logger import logger
+#model summary 
+from torchsummary import summary 
+import segmentation_models_pytorch as smp
 
 
 config = read_config("../../../config/config.yaml")
@@ -136,24 +139,76 @@ class DnCNN(nn.Module):
 
 
 
-class Unet: 
+# Unet = smp.Unet(
+#             encoder_name="resnet34",        # choose encoder, e.g. mobilenet_v2 or efficientnet-b7
+#             encoder_weights="imagenet",     # use `imagenet` pretreined weights for encoder initialization
+#             in_channels=3,                  # model input channels (1 for grayscale images, 3 for RGB, etc.)
+#             classes=3,                      # model output channels (number of classes in your dataset)
+#         ).to("cuda")
+
+
+class resblock(nn.Module): 
     def __init__(self) -> None:
-        pass
+        super(resblock, self).__init__() 
+        '''
+        
+        args: 
+            finlter: the number of filters in the conv layer
+
+        sumaary: 
+            this is the resblock used in the resnet model. 
+            it takes in the input and passes it through two conv layers and then adds the input to the output of the conv layers. 
+            the output of the conv layers is passed through a relu layer and then returned.
+        
+        
+        
+        '''
+        finlter = 64 
+        self.conv_1 = nn.Conv2d( finlter, finlter, 3, stride=1, padding=1, bias=False)
+        self.conv_2 = nn.Conv2d(3, 3, 3, stride=1, padding=1, bias=False)
+        self.batchnorm = nn.BatchNorm2d(3) 
+        self.relu = nn.ReLU(inplace=True)
+
+
 
     def forward(self, x): 
-        pass
+        x_1 = x 
+        x = self.conv_1(x)
+        x = self.batchnorm(x)
+        x = self.relu(x)
+        x = self.conv_2(x)
+        #condition for skip connection 
+
+        x = x + x_1
+        return nn.ReLU(inplace=True)(x)
 
 
-class Resnet: 
+
+class Resnet(nn.Module): 
     def __init__(self) -> None:
-        pass
+        super(Resnet, self).__init__() 
+        self.number_of_resblocks = 5
+        filter = 64
+        self.conv_1 = nn.Conv2d(3,filter, 3, stride=1, padding=1, bias=False)
+        self.resblocks = nn.Sequential(*[resblock() for _ in range(self.number_of_resblocks)])
+        self.conv_2 = nn.Conv2d(3, 3, 3, stride=1, padding=1, bias=False) 
 
     def forward(self, x): 
-        pass
+        x = self.conv_1(x)
+        x = self.resblocks(x) 
+        x = self.conv_2(x)
+        return x
 
-class Restored: 
-    def __init__(self) -> None:
-        pass
+class Models(nn.Module): 
+    def __init__(self,arch, encoder_name,encoder_weights, in_channels, out_classes, **kwargs) -> None:
+        super(Models, self).__init__() 
+        self.model = smp.create_model(arch, encoder_name,encoder_weights, in_channels, out_classes, **kwargs)
 
-    def forward(self, x): 
-        pass 
+    def forward(self, x):
+        return self.model(x) 
+
+
+
+# if __name__ == "__main__": 
+#     model = Models("unet", "resnet34", "imagenet", 3, 3).to("cuda")
+#     summary(model, (3, 256, 256)) 
