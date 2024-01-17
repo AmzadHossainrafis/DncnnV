@@ -1,4 +1,8 @@
 #Path: config/config.yaml
+Experiment_name: 
+  name : Dncnn # change experiment name for each experiment 
+
+
 Train_config: 
   batch_size: 32
   epochs: 200
@@ -76,7 +80,19 @@ model_config :
   depth: 17
   up_scale: 1
   weight_initilization: True # weight initilization don't improve the performance val loss stack at 70.0
-  mood: train
+  mood: test
+
+
+seg_model_config : 
+  model_name: Unet
+  backbone: resnet34 
+  weights: imagenet 
+  in_channels: 3 
+  out_channels: 3 
+
+
+
+
 
 
 

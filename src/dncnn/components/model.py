@@ -138,15 +138,6 @@ class DnCNN(nn.Module):
 
 
 
-
-# Unet = smp.Unet(
-#             encoder_name="resnet34",        # choose encoder, e.g. mobilenet_v2 or efficientnet-b7
-#             encoder_weights="imagenet",     # use `imagenet` pretreined weights for encoder initialization
-#             in_channels=3,                  # model input channels (1 for grayscale images, 3 for RGB, etc.)
-#             classes=3,                      # model output channels (number of classes in your dataset)
-#         ).to("cuda")
-
-
 class resblock(nn.Module): 
     def __init__(self) -> None:
         super(resblock, self).__init__() 
