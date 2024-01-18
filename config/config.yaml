@@ -91,7 +91,11 @@ seg_model_config :
   out_channels: 3 
 
 
-
+evaluation_tracker : 
+  model_name: Dncnn
+  model_path: C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt\Dncnn_best_2024-01-02-17-03-27.pth
+  test_dir: G:\muzzle\test\hr/
+  batch_size: 32
 
 
 
