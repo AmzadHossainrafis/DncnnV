@@ -17,13 +17,15 @@ class Evaluation:
         self.criterion = None 
         self.ssim =  StructuralSimilarityIndexMeasure().to("cuda")
         self.psnr = PeakSignalNoiseRatio().to("cuda")
+        self.model_weights = None 
 
     def test(self):
         test_loss = []
         ssim = [] 
         psnr = [] 
-        evaluation = enumerate
-        for idx, (hr, lr) in enumerate(self.data_loader):
+        self.model = self.model.load_state_dict(torch.load(self.model_weights))
+        evaluation = tqdm(enumerate(self.data_loader), total=len(self.data_loader), leave=False)
+        for idx, (hr, lr) in evaluation:
             hr = hr.to("cuda")
             lr = lr.to("cuda")
 
@@ -32,6 +34,9 @@ class Evaluation:
             test_loss.append(loss.item())
             ssim.append(self.ssim(sr,hr))
             psnr.append(self.psnr(sr,hr))
+
+            evaluation.set_description(f"Test Loss: {loss.item()} Test SSIM: {self.ssim(sr,hr)} Test PSNR: {self.psnr(sr,hr)}")
+            
             
         print(f"Test Loss: {np.mean(test_loss)}") 
         print(f"Test SSIM: {np.mean(ssim)}") 
@@ -54,7 +59,7 @@ class Evaluation:
 
 if __name__ == "__main__":
     config = read_config("config.yaml")
-    
+
     logger = Logger(config)
     dataloader = DataLoader(config, logger)
     evaluation = Evaluation(dataloader)
