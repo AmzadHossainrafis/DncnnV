@@ -1,6 +1,6 @@
 import yaml 
 import os 
-
+import numpy as np
 
 def read_config(config_path):
 
@@ -43,7 +43,7 @@ def lr_sheduler(optimizer, epoch, lr, decay_rate, decay_epoch):
 
 
 
-import numpy as np
+
 
 def denormalize(img, mean, std):
     """
