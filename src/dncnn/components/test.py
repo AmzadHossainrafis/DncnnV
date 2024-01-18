@@ -1,11 +1,11 @@
 import matplotlib.pyplot as plt
 import torch
-
 import numpy as np
 import os
-from dncnn.components.dataloader import DataLoader, t2, t1
+from dncnn.components.dataloader import DataLoader
 from dncnn.components.model import DnCNN
 from PIL import Image
+from dncnn.utils.common import denormalize
 
 
 
@@ -56,16 +56,21 @@ def plot_val_data(val_dataloader):
     axarr[2].axis("off")
     # titel
     axarr[0].set_title("predicted")
-    axarr[1].set_title("ground truth")
-    axarr[2].set_title("input")
+    axarr[1].set_title("input")
+    axarr[2].set_title("ground truth ")
     #de nomalize the lr and hr 
-    hr = hr*255.00
-    lr = lr*255.00
-    sr= sr*255.0
+    lr = denormalize(lr.numpy(), mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    hr = denormalize(hr.numpy(), mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    sr = denormalize(sr.numpy(), mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
-    axarr[1].imshow(lr[0].permute(1, 2, 0).numpy().astype(np.uint8))
-    axarr[0].imshow(sr[0].permute(1, 2, 0).numpy().astype(np.uint8))
-    axarr[2].imshow(hr[0].permute(1, 2, 0).numpy().astype(np.uint8))
+    axarr[0].imshow(sr[0].transpose(1, 2, 0)) 
+    axarr[1].imshow(hr[0].transpose(1, 2, 0))
+    axarr[2].imshow(lr[0].transpose(1, 2, 0))
+
+
+    # axarr[1].imshow(lr[0].permute(1, 2, 0).numpy().astype(np.uint8))
+    # axarr[0].imshow(sr[0].permute(1, 2, 0).numpy().astype(np.uint8))
+    # axarr[2].imshow(hr[0].permute(1, 2, 0).numpy().astype(np.uint8))
 
     plt.show()
 

@@ -209,7 +209,7 @@ if __name__ == "__main__":
         num_workers=val_DL_config["num_workers"],
         transform=val_DL_config["transform"],
     )
-    model = DnCNN().to("cuda")
+    model = Models("unet", "resnet34", "imagenet", 3, 3).to("cuda") # DnCNN().to("cuda")
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=train_config["lr"])
     lr_sch = ReduceLROnPlateau(
