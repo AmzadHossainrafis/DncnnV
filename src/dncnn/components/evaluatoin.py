@@ -58,10 +58,4 @@ class Evaluation:
 
 
 if __name__ == "__main__":
-    config = read_config("config.yaml")
-
-    logger = Logger(config)
-    dataloader = DataLoader(config, logger)
-    evaluation = Evaluation(dataloader)
-    evaluation.test()
-    
+    pass 
