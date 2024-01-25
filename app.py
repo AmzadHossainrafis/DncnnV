@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 import albumentations as A
 from flask import Flask, render_template, request
-from dncnn.components.model import *
+from dncnn.components.model import DnCNN 
 from albumentations.pytorch import ToTensorV2
 from dncnn.utils.common import read_config
 from dncnn.utils.logger import logger
@@ -13,18 +13,19 @@ from dncnn.utils.exception import CustomException
 from dncnn.utils.common import denormalize
 
 
-config = read_config("config/config.yaml")
+config = read_config(r"C:\Users\Amzad\Desktop\Dncnn\config\config.yaml")
 prediction_config = config["Prediction_config"]
+
 
 model = DnCNN() # change this according to
 model.load_state_dict(torch.load(prediction_config['model_path'], map_location=torch.device('cpu')))
 model.eval()
 
 prediction_transform = A.Compose([
-    A.Resize(prediction_config['image_size'], prediction_config['image_size']),
+    A.Resize(prediction_config['transfortm']['image_size'], prediction_config['transfortm']['image_size']),
     A.Normalize(
-        mean=prediction_config['normalization']['mean'],
-        std=prediction_config['normalization']['std'],
+        mean=prediction_config['transfortm']['normalization']['mean'],
+        std=prediction_config['transfortm']['normalization']['std'],
         max_pixel_value=255.0,
     ),
     ToTensorV2(),
