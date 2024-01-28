@@ -4,7 +4,7 @@ import torch
 import numpy as np
 from PIL import Image
 import albumentations as A
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request,jsonify  
 from dncnn.components.model import DnCNN 
 from albumentations.pytorch import ToTensorV2
 from dncnn.utils.common import read_config
@@ -62,7 +62,7 @@ def get_prediction(image):
         preds = denormalize(preds.squeeze(0).squeeze(0), prediction_config['normalization']['mean'], prediction_config['normalization']['std'])
         preds = preds.detach().numpy()
         preds = preds.astype(np.uint8)
-    return preds, input
+    return jsonify(preds.tolist()), {"input": input.tolist()}
 
     
 
