@@ -1,19 +1,19 @@
 import torch 
 import numpy as np 
 import matplotlib.pyplot as plt
-from dncnn.components.dataloader import DataLoader 
-from dncnn.components.model import *
-from dncnn.components.utils.logger import Logger 
-from dncnn.components.utils.common import denormalize
+from dncnn.components.dataloader import *
+from dncnn.components.model import DnCNN
+from dncnn.utils.logger import logger 
+from dncnn.utils.common import denormalize
 from torchmetrics.image import StructuralSimilarityIndexMeasure, PeakSignalNoiseRatio
 from tqdm import tqdm 
 
 
 
 class Evaluation:
-    def __init__(self,dataloader) -> None:
-        self.data_loader = dataloader
-        self.model = None 
+    def __init__(self,data_loader) -> None:
+        self.data_loader = data_loader
+        self.model = DnCNN().to("cuda")
         self.criterion = None 
         self.ssim =  StructuralSimilarityIndexMeasure().to("cuda")
         self.psnr = PeakSignalNoiseRatio().to("cuda")
@@ -25,18 +25,20 @@ class Evaluation:
         psnr = [] 
         self.model = self.model.load_state_dict(torch.load(self.model_weights))
         evaluation = tqdm(enumerate(self.data_loader), total=len(self.data_loader), leave=False)
-        for idx, (hr, lr) in evaluation:
-            hr = hr.to("cuda")
-            lr = lr.to("cuda")
+        with torch.no_grad():
+            for idx, (hr, lr) in evaluation:
+                print(f'type of hr: {type(hr)}')
+                hr = hr.to("cuda")
+                lr = lr.to("cuda")
 
-            sr = self.model(lr)
-            loss = self.criterion(sr, hr)
-            test_loss.append(loss.item())
-            ssim.append(self.ssim(sr,hr))
-            psnr.append(self.psnr(sr,hr))
+                sr = self.model(lr)
+                loss = self.criterion(sr, hr)
+                test_loss.append(loss.item())
+                ssim.append(self.ssim(sr,hr))
+                psnr.append(self.psnr(sr,hr))
 
-            evaluation.set_description(f"Test Loss: {loss.item()} Test SSIM: {self.ssim(sr,hr)} Test PSNR: {self.psnr(sr,hr)}")
-            
+                evaluation.set_description(f"Test Loss: {loss.item()} Test SSIM: {self.ssim(sr,hr)} Test PSNR: {self.psnr(sr,hr)}")
+                
             
         print(f"Test Loss: {np.mean(test_loss)}") 
         print(f"Test SSIM: {np.mean(ssim)}") 
@@ -58,10 +60,24 @@ class Evaluation:
 
 
 if __name__ == "__main__":
-    config = read_config("config.yaml")
-
-    logger = Logger(config)
-    dataloader = DataLoader(config, logger)
+    val_DL_config = {
+        "val_hr_dir": r"G:\muzzle\val\hr/",
+        "batch_size": 16,
+        "shuffle": False,
+        "num_workers": 0,
+        "transform": None,
+    }
+    dataloader = DataLoader(
+        val_DL_config["val_hr_dir"],
+        batch_size=val_DL_config["batch_size"],
+        shuffle=val_DL_config["shuffle"],
+        num_workers=val_DL_config["num_workers"],
+        transform=val_DL_config["transform"],
+    )
+    print(f"Length of the dataloader: {len(dataloader)}")
+    print(f'type of dataloader: {type(dataloader[0])}')
     evaluation = Evaluation(dataloader)
+    evaluation.model_weights = r"C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt\Dncnn_best_2024-01-11-12-19-39.pth"
+    evaluation.criterion = torch.nn.MSELoss()
     evaluation.test()
-    
+    # evaluation.plot_val_data()

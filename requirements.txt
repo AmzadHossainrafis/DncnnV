@@ -4,3 +4,4 @@ albumentations
 PyYAML
 numpy 
 torchmetrics
+flask
