@@ -4,7 +4,7 @@
 
 ## Introduction
 
-This is a PyTorch implementation of DNCnn for image denoising and deblurring. Dncnn is a deep convolutional neural network for image denoising. It is a fully convolutional network with residual learning and batch normalization. The network is trained end-to-end with mean squared error (MSE) loss.
+This is a PyTorch implementation of DNCnn for image denoising and de-blurring. Dncnn is a deep convolutional neural network for image denoising. It is a fully convolutional network with residual learning and batch normalization. The network is trained end-to-end with mean squared error (MSE) loss.
 
 ## Requirements
 
@@ -20,7 +20,7 @@ please read through the pytorch installation guide [here](https://pytorch.org/ge
 
 **Note** : while training the model we have used the same architecture as shown in the above figure. But there are something to keep in mind while using this architecture.
 
-model config contain  up_scale parameter. this parameter is used to scale the image after feeding it to the network. Every up_scale layer will scale the image by 2.Exmple : input --> 64x64x3 image --> after 1st up_scale --> 128x128x3 image --> after 2nd up_scale --> 256x256x3 image.you need to change the transform t2 image size 256,256 to match the output size of the network.
+model config contain  up_scale parameter. this parameter is used to scale the image after feeding it to the network. Every up_scale layer will scale the image by 2.Example : input --> 64x64x3 image --> after 1st up_scale --> 128x128x3 image --> after 2nd up_scale --> 256x256x3 image.you need to change the transform t2 image size 256,256 to match the output size of the network.
 
 
 
@@ -65,7 +65,7 @@ dataset images demon
 
 
 
-  1. create train and val and test folders inside the dataset forlder 
+  1. create train and val and test folders inside the dataset folder 
   2. paste the images inside the train and val and test folders accordingly . recommended to create hr inside the train and val and test     folders and paste the images accordingly.
 
 folder structure should be like this 
@@ -100,7 +100,7 @@ before training you can change the parameters in the config file according to yo
 
 
 ```bash
-cd dncnn/componenets/
+cd dncnn/components/
 python python trainer.py 
     
 ```
