@@ -55,6 +55,14 @@ pip install -e .
 
 ```
 
+6. Update Device configuration in the config file 
+```
+Open the  config/config.yaml file and update the device parameter to match your system configuration. 
+```
+Train_Config:
+  device: if you have a gpu then set it to 'cuda' else set it to 'cpu'
+```
+
 ## dataset setup 
 
 for this project we have used the BSDS500 dataset for training and testing. The dataset can be downloaded from [here](https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/resources.html#bsds500). 

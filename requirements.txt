@@ -3,5 +3,5 @@ matplotlib
 albumentations
 PyYAML
 numpy 
-torchmetrics
+# torchmetrics
 flask
