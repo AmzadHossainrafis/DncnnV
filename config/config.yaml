@@ -4,10 +4,11 @@ Experiment_name:
 
 
 Train_config: 
+  device: cuda
   batch_size: 32
   epochs: 200
   lr: 0.001
-  lr_sheduler: False
+  lr_scheduler: False
   lr_scheduler: 
     mode: 'min'
     factor: 0.1
@@ -24,6 +25,7 @@ Train_DL_config:
   num_workers: 4
   shuffle: True
   transform: True
+  
 
 Val_DL_config:
   val_hr_dir: G:\muzzle\val\hr/
