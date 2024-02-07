@@ -1,6 +1,7 @@
 import sys 
 import os 
 import torch
+import datetime
 import numpy as np
 from PIL import Image
 import albumentations as A
@@ -12,11 +13,9 @@ from dncnn.utils.logger import logger
 from dncnn.utils.exception import CustomException
 from dncnn.utils.common import denormalize
 
-import datetime
 current_time = datetime.datetime.now().strftime("%d%m%Y_%H%M%S")
 
-
-config = read_config(r"/home/sanjib/workspace/rNd/DncnnV/config/config.yaml")
+config = read_config("config/config.yaml")
 prediction_config = config["Prediction_config"]
 
 UPLOAD_FOLDER = './static/uploads/'

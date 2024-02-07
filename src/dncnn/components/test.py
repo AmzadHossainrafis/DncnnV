@@ -41,7 +41,7 @@ def plt_reults(val_dataloader):
 def plot_val_data(val_dataloader):
     model = DnCNN().to(train_config["device"])
     model.load_state_dict(
-        torch.load(r'C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt\Dncnn_best_2024-01-11-12-19-39.pth')
+        torch.load(r"/artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth")
     )
     model.eval()
 
@@ -79,7 +79,7 @@ def single_prediction(img_dir):
     model = DnCNN().to(train_config["device"])
     model.load_state_dict(
         torch.load(
-            r"C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt\model_mv2-100.pth"
+            r"/artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth"
         )
     )
     model.eval()

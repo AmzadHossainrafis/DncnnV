@@ -77,7 +77,7 @@ if __name__ == "__main__":
     print(f"Length of the dataloader: {len(dataloader)}")
     print(f'type of dataloader: {type(dataloader[0])}')
     evaluation = Evaluation(dataloader)
-    evaluation.model_weights = r"C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt\Dncnn_best_2024-01-11-12-19-39.pth"
+    evaluation.model_weights = r"/artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth"
     evaluation.criterion = torch.nn.MSELoss()
     evaluation.test()
     # evaluation.plot_val_data()
