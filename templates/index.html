@@ -1,16 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Image Restorer</title>
-</head>
-<body>
-    <h1>Image Restorer HomePage</h1>
-    
-    <p><a href="/predict/">Restore a blur image</a></p>
-    
-    <!-- Add your content here -->
-    
-    <script src="script.js"></script>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+    <div class="row">
+        <div class="col">
+            <h3>Upload Image to Restore</h3>
+            <form method="post" enctype="multipart/form-data">
+                <input type="file" name="file" id="fileInput" accept="image/*" onchange="previewImage()">
+                <input type="submit" value="Upload">
+            </form>
+        </div>
+        <div class="col">
+            <div id="imagePreview" style="padding: 10px; margin: auto;"></div>
+        </div>
+    </div>
+
+    <script>
+        function previewImage() {
+            var fileInput = document.getElementById('fileInput');
+            var imagePreview = document.getElementById('imagePreview');
+            
+            while (imagePreview.firstChild) {
+                imagePreview.removeChild(imagePreview.firstChild);
+            }
+
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+            
+            reader.onload = function (e) {
+                var imgElement = document.createElement('img');
+                imgElement.src = e.target.result;
+                imgElement.style.maxWidth = '300px'; // Adjust maximum width as needed
+                imgElement.style.maxHeight = '300px'; // Adjust maximum height as needed
+                imagePreview.appendChild(imgElement);
+                var p = document.createElement('p');
+                p.textContent = `File Name: ${file.name}`;
+                imagePreview.appendChild(p);
+            };
+            
+            reader.readAsDataURL(file);
+        }
+    </script>
+{% endblock %}

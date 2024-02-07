@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error</title>
-</head>
-<body>
-    <div>
-    <p>Conversion failed. <a href="/">Go back</a></p>
-    </div>
-</body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+    <h3 style="color: brown; font-size: 1em;">Conversion Failed</h3>
+    <p style="color: red;">{{error}}</p>
+    <p> Upload a jpg image and <a href="/">try again</a></p>
+{% endblock %}
