@@ -5,7 +5,7 @@ import datetime
 import numpy as np
 from PIL import Image
 import albumentations as A
-from flask import Flask, render_template, request,jsonify, flash, request, redirect, url_for
+from flask import Flask, render_template, request,jsonify, flash, request, redirect, url_for, send_from_directory
 from dncnn.components.model import DnCNN 
 from albumentations.pytorch import ToTensorV2
 from dncnn.utils.common import read_config
@@ -38,8 +38,6 @@ prediction_transform = A.Compose([
     ToTensorV2(),
 ])
 
-
-
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['RESTORED_FOLDER'] = RESTORED_FOLDER
@@ -48,14 +46,15 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route("/predict/", methods=["GET","POST"])
+
+@app.route("/", methods=["GET","POST"])
 def predict():
     if request.method == "POST":
         if 'file' not in request.files:
             return render_template("error.html", error="No file part")
         file = request.files['file']
         if file.filename == '':
-            return render_template("error.html", error="No selected file")
+            return render_template("error.html", error="No file selected")
         if file and allowed_file(file.filename):
             try:
                 preds = get_prediction(file)
@@ -65,31 +64,24 @@ def predict():
                 # name the file with todays date and time and save it in the static/uploads folder
                 filename = f"converted_on_{current_time}.jpg"
                 converted_image.save(os.path.join(app.config['RESTORED_FOLDER'], filename))
-                return render_template("success.html")
+                return render_template("success.html", filename=filename)
             except CustomException as e:
                 logger.error(e)
                 return render_template("error.html", error=CustomException(e, sys))
             except Exception as e:
                 logger.error(e)
                 return render_template("error.html", error="Something went wrong. Please try again later.")
-    return '''
-    <!doctype html>
-    <title>File Uploader</title>
-    <p><a href="/">Home</a></p>
-    <h1>Upload new File to Restore</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
-    
+    return render_template("index.html")
 
+@app.route('/restored-images/<filename>')
+def restored_file(filename):
+    return send_from_directory(app.config['RESTORED_FOLDER'], filename)
 
 def get_prediction(image):
     image = Image.open(image)
     image = np.array(image)
     image = prediction_transform(image=image)["image"]
-    # permote the channel to the first dimension as pytorch expects the channel to be the first dimension 
+    # permute the channel to the first dimension as pytorch expects the channel to be the first dimension 
     image = image.permute(0, 2, 1)
     image = image.unsqueeze(0)
     with torch.no_grad():
@@ -98,16 +90,6 @@ def get_prediction(image):
         preds = denormalize(preds.squeeze(0).squeeze(0).numpy(), prediction_config['transform']['normalization']['mean'], prediction_config['transform']['normalization']['std'])
         # preds = preds.astype(np.uint8)
     return preds
-
-    
-
-
-@app.route("/")
-def index():
-    return render_template("index.html")
-
-
-
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000) 
