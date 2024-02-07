@@ -3,5 +3,6 @@ matplotlib
 albumentations
 PyYAML
 numpy 
+# Uncomment torchmetrics if you want to train new Model
 # torchmetrics
 flask
