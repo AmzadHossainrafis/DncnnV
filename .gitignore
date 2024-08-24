@@ -133,6 +133,7 @@ project/
 wandb/
 tasks.docx
 
-dataset/*
 dataset/* 
-artifact/*
+artifact/model_ckpt/*
+# Test dataset
+muzzle/*

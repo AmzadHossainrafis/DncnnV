@@ -8,15 +8,15 @@ from dncnn.utils.common import denormalize
 from torchmetrics.image import StructuralSimilarityIndexMeasure, PeakSignalNoiseRatio
 from tqdm import tqdm 
 
-
+from trainer import train_config
 
 class Evaluation:
     def __init__(self,data_loader) -> None:
         self.data_loader = data_loader
-        self.model = DnCNN().to("cuda")
+        self.model = DnCNN().to(train_config["device"])
         self.criterion = None 
-        self.ssim =  StructuralSimilarityIndexMeasure().to("cuda")
-        self.psnr = PeakSignalNoiseRatio().to("cuda")
+        self.ssim =  StructuralSimilarityIndexMeasure().to(train_config["device"])
+        self.psnr = PeakSignalNoiseRatio().to(train_config["device"])
         self.model_weights = None 
 
     def test(self):
@@ -28,8 +28,8 @@ class Evaluation:
         with torch.no_grad():
             for idx, (hr, lr) in evaluation:
                 print(f'type of hr: {type(hr)}')
-                hr = hr.to("cuda")
-                lr = lr.to("cuda")
+                hr = hr.to(train_config["device"])
+                lr = lr.to(train_config["device"])
 
                 sr = self.model(lr)
                 loss = self.criterion(sr, hr)
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     print(f"Length of the dataloader: {len(dataloader)}")
     print(f'type of dataloader: {type(dataloader[0])}')
     evaluation = Evaluation(dataloader)
-    evaluation.model_weights = r"C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt\Dncnn_best_2024-01-11-12-19-39.pth"
+    evaluation.model_weights = r"/artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth"
     evaluation.criterion = torch.nn.MSELoss()
     evaluation.test()
     # evaluation.plot_val_data()

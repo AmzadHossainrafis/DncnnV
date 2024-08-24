@@ -6,7 +6,7 @@ from dncnn.components.transform import *
 from dncnn.utils.common import read_config
 from dncnn.components.model import config
 
-# config = read_config('../../../config/config.yaml')
+config = read_config(r"config/config.yaml")
 transform_config = config["Transform"]
 seed = transform_config["seed"]
 

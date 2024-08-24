@@ -32,7 +32,7 @@ def create_dir(path):
     return path
 
 
-def lr_sheduler(optimizer, epoch, lr, decay_rate, decay_epoch):
+def lr_scheduler(optimizer, epoch, lr, decay_rate, decay_epoch):
     """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
     lr = lr * (decay_rate ** (epoch // decay_epoch))
     for param_group in optimizer.param_groups:

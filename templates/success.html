@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+    <p>Your image has been restored successfully</p>
+    <img src="{{ url_for('restored_file', filename=filename) }}" alt="Converted Image">
+    <p><a href="/">Restore another image</a></p>
+{% endblock %}

@@ -89,7 +89,7 @@ class Trainer:
         self.optimizer = optimizer
         self.lr_scheduler = lr_scheduler
         self.epochs = epochs
-        self.ssim = StructuralSimilarityIndexMeasure().to("cuda")
+        self.ssim = StructuralSimilarityIndexMeasure().to(train_config["device"])
 
     def train_epoch(self, epoch):
         self.model.train()
@@ -100,8 +100,8 @@ class Trainer:
             leave=False,
         )
         for idx, (lr, hr) in train_:
-            hr = hr.to("cuda")
-            lr = lr.to("cuda")
+            hr = hr.to(train_config["device"])
+            lr = lr.to(train_config["device"])
             self.optimizer.zero_grad()
             sr = self.model(lr)
             loss = self.criterion(sr, hr)
@@ -123,8 +123,8 @@ class Trainer:
         )
         with torch.no_grad():
             for idx, (lr, hr) in val_bar:
-                hr = hr.to("cuda")
-                lr = lr.to("cuda")
+                hr = hr.to(train_config["device"])
+                lr = lr.to(train_config["device"])
                 sr = self.model(lr)
                 loss = self.criterion(sr, hr)
                 val_loss_per_epoch.append(loss.item())
@@ -209,7 +209,7 @@ if __name__ == "__main__":
         num_workers=val_DL_config["num_workers"],
         transform=val_DL_config["transform"],
     )
-    model = Models("unet", "resnet34", "imagenet", 3, 3).to("cuda") # DnCNN().to("cuda")
+    model = Models("unet", "resnet34", "imagenet", 3, 3).to(train_config["device"]) # DnCNN().to(train_config["device"])
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=train_config["lr"])
     lr_sch = ReduceLROnPlateau(

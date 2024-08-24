@@ -4,10 +4,11 @@ Experiment_name:
 
 
 Train_config: 
+  device: cuda
   batch_size: 32
   epochs: 200
   lr: 0.001
-  lr_sheduler: False
+  lr_scheduler: False
   lr_scheduler: 
     mode: 'min'
     factor: 0.1
@@ -19,14 +20,15 @@ Train_config:
 
 
 Train_DL_config:
-  train_hr_dir: G:\muzzle\train\hr/
+  train_hr_dir: ./muzzle/train/hr
   batch_size: 32
   num_workers: 4
   shuffle: True
   transform: True
+  
 
 Val_DL_config:
-  val_hr_dir: G:\muzzle\val\hr/
+  val_hr_dir: ./muzzle/val/hr
   batch_size: 16
   num_workers: 4
   shuffle: False
@@ -34,17 +36,17 @@ Val_DL_config:
 
 
 Test_DL_config: 
-  test_hr_dir: G:\muzzle\test\hr/
+  test_hr_dir: ./muzzle/train/hr
   batch_size: 32
   num_workers: 4
   shuffle: False
   transform: True
 
 Paths : 
-  dataset : C:\Users\Amzad\Desktop\Dncnn\dataset/
-  log_dir : C:\Users\Amzad\Desktop\Dncnn\logs/
-  model_ckpt: C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt/
-  figs: C:\Users\Amzad\Desktop\Dncnn\figs/
+  dataset : ./dataset/
+  log_dir : ./logs
+  model_ckpt: ./artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
+  figs: ./figs/
 
 Transform:
   t1 :
@@ -68,7 +70,7 @@ Transform:
   seed: 42
 
 Test_config: 
-  model_path: C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt\Dncnn_best_2024-01-02-17-03-27.pth
+  model_path: ./artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
 
 
 
@@ -93,16 +95,16 @@ seg_model_config :
 
 evaluation_tracker : 
   model_name: Dncnn
-  model_path: C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt\Dncnn_best_2024-01-02-17-03-27.pth
-  test_dir: G:\muzzle\test\hr/
+  model_path: ./artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
+  test_dir: ./muzzle/train/hr
   batch_size: 32
 
 
 
 Prediction_config : 
   model_name: Dncnn
-  model_path: C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt\Dncnn_best_2024-01-02-17-03-27.pth
-  transfortm : 
+  model_path: ./artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
+  transform : 
     p: 1
     image_size: 256
     normalization:

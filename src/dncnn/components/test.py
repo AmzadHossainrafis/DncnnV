@@ -7,14 +7,14 @@ from dncnn.components.model import DnCNN
 from PIL import Image
 from dncnn.utils.common import denormalize
 
-
+from trainer import train_config
 
 
 def test(model, test_dataloader, criterion):
     test_loss = []
     for idx, (hr, lr) in enumerate(test_dataloader):
-        hr = hr.to("cuda")
-        lr = lr.to("cuda")
+        hr = hr.to(train_config["device"])
+        lr = lr.to(train_config["device"])
 
         sr = model(lr)
         loss = criterion(sr, hr)
@@ -39,15 +39,15 @@ def plt_reults(val_dataloader):
 
 
 def plot_val_data(val_dataloader):
-    model = DnCNN().to("cuda")
+    model = DnCNN().to(train_config["device"])
     model.load_state_dict(
-        torch.load(r'C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt\Dncnn_best_2024-01-11-12-19-39.pth')
+        torch.load(r"/artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth")
     )
     model.eval()
 
     dl = val_dataloader
     hr, lr = dl.__getitem__(0)
-    sr = model(lr.to("cuda"))
+    sr = model(lr.to(train_config["device"]))
     sr = sr.detach().cpu()
     f, axarr = plt.subplots(1, 3)
     # turn off axis
@@ -76,17 +76,17 @@ def plot_val_data(val_dataloader):
 
 
 def single_prediction(img_dir):
-    model = DnCNN().to("cuda")
+    model = DnCNN().to(train_config["device"])
     model.load_state_dict(
         torch.load(
-            r"C:\Users\Amzad\Desktop\Dncnn\artifact\model_ckpt\model_mv2-100.pth"
+            r"/artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth"
         )
     )
     model.eval()
     img = Image.open(img_dir)
     img = np.array(img)
     img = torch.from_numpy(img).permute(2, 0, 1).unsqueeze(0).float()
-    sr = model(img.to("cuda"))
+    sr = model(img.to(train_config["device"]))
     sr = sr.detach().cpu()
     # axix off
     plt.axis("off")

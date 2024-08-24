@@ -7,7 +7,7 @@ today = dt.datetime.today().strftime("%Y-%m-%d")
 logging_str = "[%(asctime)s: %(levelname)s: %(module)s: %(message)s]"
 
 
-dir = r"C:\Users\Amzad\Desktop\Dncnn\logs/"
+dir = r"./logs/"
 
 
 log_filepath = os.path.join(dir, f"running_logs_{today}.log")
