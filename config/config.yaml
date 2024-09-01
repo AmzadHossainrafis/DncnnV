@@ -23,7 +23,7 @@ Train_config:
 
 # change dataset directories
 Train_DL_config:
-  train_hr_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/train/hr
+  train_hr_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/train/hr/
   batch_size: 25
   num_workers: 4
   shuffle: True
@@ -31,7 +31,7 @@ Train_DL_config:
   
 
 Val_DL_config:
-  val_hr_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/val/hr
+  val_hr_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/val/hr/
   batch_size: 16
   num_workers: 4
   shuffle: False
@@ -39,7 +39,7 @@ Val_DL_config:
 
 
 Test_DL_config: 
-  test_hr_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/test/hr
+  test_hr_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/test/hr/
   batch_size: 32
   num_workers: 4
   shuffle: False
@@ -83,7 +83,7 @@ model_config :
   in_channels: 3
   out_channels: 3
   start_channels: 64
-  depth: 17
+  depth: 12
   up_scale: 1
   weight_initilization: True # weight initilization don't improve the performance val loss stack at 70.0
   mood: test
@@ -99,7 +99,7 @@ seg_model_config :
 
 evaluation_tracker : 
   model_name: Dncnn
-  model_path: ./artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
+  model_path: ../artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
   test_dir: ./muzzle/train/hr
   batch_size: 32
 
@@ -107,7 +107,7 @@ evaluation_tracker :
 
 Prediction_config : 
   model_name: Dncnn
-  model_path: ./artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
+  model_path: ../artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
   transform : 
     p: 1
     image_size: 256

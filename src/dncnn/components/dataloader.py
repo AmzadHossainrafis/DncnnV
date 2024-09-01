@@ -37,7 +37,7 @@ def apply_random_blur(image):
 
    # Choose a random blur transformation
    blur_transform = np.random.choice(blur_transforms)
-   print(f"blur_transform:{blur_transform}")
+#    print(f"blur_transform:{blur_transform}")
 
    # Apply the blur to the entire image
    blurred_image = blur_transform(image=image)["image"]
@@ -47,7 +47,8 @@ def apply_random_blur(image):
 
    return result_image
 
-config = read_config(r"/media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/config/config.yaml")
+config = read_config("/media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/config/config.yaml")
+
 transform_config = config["Transform"]
 seed = transform_config["seed"]
 
