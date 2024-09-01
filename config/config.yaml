@@ -47,9 +47,9 @@ Test_DL_config:
 
 Paths : 
   dataset : /media/aps/D826F6E026F6BE96/RnD/dataset/
-  log_dir : ../logs
-  model_ckpt: ../artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
-  figs: ../figs/
+  log_dir : /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/logs/
+  model_ckpt: /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/artifact/model_ckpt/
+  figs: /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/figs
 
 # setting t1 image_size to 256 clashes with unet, works with DnCnnv
 Transform:
@@ -74,7 +74,7 @@ Transform:
   seed: 42
 
 Test_config: 
-  model_path: ../artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
+  model_path: /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/artifact/model_ckpt/
 
 
 
@@ -99,7 +99,7 @@ seg_model_config :
 
 evaluation_tracker : 
   model_name: Dncnn
-  model_path: ../artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
+  model_path: /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/artifact/model_ckpt/
   test_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/test/hr/
   batch_size: 32
 
@@ -107,7 +107,7 @@ evaluation_tracker :
 
 Prediction_config : 
   model_name: Dncnn
-  model_path: ../artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
+  model_path: ../artifact/model_ckpt/
   transform : 
     p: 1
     image_size: 256
