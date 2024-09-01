@@ -5,7 +5,8 @@ from dncnn.utils.logger import logger
 from torchsummary import summary 
 import segmentation_models_pytorch as smp
 
-config = read_config(r"config/config.yaml")
+# chnage the config file here
+config = read_config(r"/media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/config/config.yaml")
 model_config = config["model_config"]
 
 
