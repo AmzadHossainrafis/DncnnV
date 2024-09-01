@@ -100,7 +100,7 @@ seg_model_config :
 evaluation_tracker : 
   model_name: Dncnn
   model_path: ../artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
-  test_dir: ./muzzle/train/hr
+  test_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/test/hr/
   batch_size: 32
 
 

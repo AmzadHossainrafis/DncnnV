@@ -10,7 +10,14 @@ from dncnn.utils.logger import logger
 from dncnn.utils.exception import CustomException
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torchmetrics.image import StructuralSimilarityIndexMeasure
+from torchmetrics.image import PeakSignalNoiseRatio 
+from torchinfo import summary
 
+
+# mlflow
+import mlflow
+import mlflow.pytorch
+from mlflow.models.signature import infer_signature
 
 
 
@@ -89,21 +96,25 @@ class Trainer:
         self.optimizer = optimizer
         self.lr_scheduler = lr_scheduler
         self.epochs = epochs
-        self.ssim = StructuralSimilarityIndexMeasure().to(train_config["device"])
+        self.ssim = StructuralSimilarityIndexMeasure().to("cuda")
+        self.psnr = PeakSignalNoiseRatio().to("cuda")
 
+ 
+    
     def train_epoch(self, epoch):
         self.model.train()
         train_loss_per_epoch = []
         train_ = tqdm(
             enumerate(self.train_dataloader),
-            total=len(self.train_dataloader),
-            leave=False,
-        )
+            total=len(next(iter(self.train_dataloader)),
+            # leave=False,
+        ))
         for idx, (lr, hr) in train_:
-            hr = hr.to(train_config["device"])
-            lr = lr.to(train_config["device"])
+            hr = hr.to("cuda")
+            lr = lr.to("cuda")
             self.optimizer.zero_grad()
             sr = self.model(lr)
+            # print(f"sr shape :{sr.shape} and hr shape:{hr.shape}")
             loss = self.criterion(sr, hr)
             loss.backward()
             self.optimizer.step()
@@ -118,59 +129,86 @@ class Trainer:
         self.model.eval()
         val_loss_per_epoch = []
         ssim_score = []
-        val_bar = tqdm(
-            enumerate(self.val_dataloader), total=len(self.val_dataloader), leave=False
-        )
+        psnr_score = []
+
+        # print(f"val len:{len(self.val_dataloader)}")
+        val_bar = tqdm(enumerate(self.val_dataloader), total=len(self.val_dataloader), desc="validating")
         with torch.no_grad():
-            for idx, (lr, hr) in val_bar:
-                hr = hr.to(train_config["device"])
-                lr = lr.to(train_config["device"])
+            for idx, (lr, hr) in val_bar :
+                hr = hr.to("cuda")
+                lr = lr.to("cuda")
                 sr = self.model(lr)
                 loss = self.criterion(sr, hr)
                 val_loss_per_epoch.append(loss.item())
                 ssim_score.append(self.ssim(sr, hr).item())
+                psnr_score.append(self.psnr(sr, hr).item())
                 # print(f'ssim_score : {np.mean(ssim_score)}')
                 
-        return np.mean(val_loss_per_epoch) , np.mean(ssim_score)
+        return np.mean(val_loss_per_epoch) , np.mean(ssim_score), np.mean(psnr_score)
 
     def train(self):
+        # set the exp name
+        mlflow.set_experiment("DnCNNV-01")
+
         train_loss = []
         val_loss = []
         ssim_score = [] # Structural Similarity Index Measure
+        psnr_score = []
+
         best_val_loss = float("inf")
 
-        for epoch in range(self.epochs):
-            try:
-                train_loss_per_epoch = self.train_epoch(epoch)
-                val_loss_per_epoch,ssim_value = self.validate_epoch(epoch)
-            except Exception as e:
-                logger.error(f"Error in training {e}")
-                raise CustomException(e, sys)
 
-            train_loss.append(train_loss_per_epoch)
-            val_loss.append(val_loss_per_epoch)
-            ssim_score.append(ssim_value)
-            self.lr_scheduler.step(val_loss_per_epoch)
-            print(
-                f"Epoch: {epoch+1} Train Loss: {train_loss_per_epoch} , Val Loss: {val_loss_per_epoch} , SSIM: {ssim_value}"
-            )
-            # print(f"Epoch: {epoch+1} Val Loss: {val_loss_per_epoch}")
+        with mlflow.start_run() as run:
+            for epoch in tqdm(range(self.epochs)):
+                try:
+                    train_loss_per_epoch = self.train_epoch(epoch)
+                    val_loss_per_epoch,ssim_value, psnr_value = self.validate_epoch(epoch)
+                except Exception as e:
+                    logger.error(f"Error in training {e}")
+                    raise CustomException(e, sys)
 
-            if val_loss_per_epoch < best_val_loss:
-                best_val_loss = val_loss_per_epoch
-                torch.save(
-                    self.model.state_dict(),
-                    f"{path_config['model_ckpt']}/Dncnn_best_{today_data_time}.pth",
+                train_loss.append(train_loss_per_epoch)
+                val_loss.append(val_loss_per_epoch)
+                ssim_score.append(ssim_value)
+                psnr_score.append(psnr_value)
+
+                self.lr_scheduler.step(val_loss_per_epoch)
+                print(
+                    f"Epoch: {epoch+1} Train Loss: {train_loss_per_epoch} , Val Loss: {val_loss_per_epoch} , SSIM: {ssim_value}, PSNR: {psnr_value}"
                 )
-                print("Model Saved")
-                logger.info(f"Model Saved at {epoch} ")
-                logger.info(
-                    f"Epoch: {epoch+1} Train Loss: {train_loss_per_epoch} , Val Loss: {val_loss_per_epoch}"
-                )
-                logger.info((f'SSIM: {ssim_value}'))
-                logger.info(
-                    f'Current learning rate: {self.optimizer.param_groups[0]["lr"]}'
-                )
+                # print(f"Epoch: {epoch+1} Val Loss: {val_loss_per_epoch}")
+
+                if val_loss_per_epoch < best_val_loss:
+                    best_val_loss = val_loss_per_epoch
+                    torch.save(
+                        self.model.state_dict(),
+                        f"{path_config['model_ckpt']}/Dncnn_best_{today_data_time}.pth",
+                    )
+                    print("Model Saved")
+                    logger.info(f"Model Saved at {epoch} ")
+                    logger.info(
+                        f"Epoch: {epoch+1} Train Loss: {train_loss_per_epoch} , Val Loss: {val_loss_per_epoch}"
+                    )
+                    logger.info((f'SSIM: {ssim_value}'))
+                    logger.info((f'PSNR: {psnr_value}'))
+
+                    # mlflow metrics
+                    mlflow.log_metric("Train Loss", train_loss_per_epoch, step=epoch)
+                    mlflow.log_metric("Val Loss", val_loss_per_epoch, step=epoch)
+                    mlflow.log_metric("SSIM", ssim_value, step=epoch)
+                    mlflow.log_metric("PSNR", psnr_value, step=epoch)
+
+                    # mlflow params
+                    mlflow.log_param("optimizer", optimizer)
+                    mlflow.log_param("Learning Rate", train_config["lr"])
+                    mlflow.log_param("Batch Size", train_config["batch_size"])
+                   
+
+                    
+
+                    logger.info(
+                        f'Current learning rate: {self.optimizer.param_groups[0]["lr"]}'
+                    )
 
         return train_loss, val_loss 
 
@@ -187,13 +225,13 @@ if __name__ == "__main__":
     train_DL_config = config["Train_DL_config"]
     val_DL_config = config["Val_DL_config"]
     lr_config = train_config["lr_scheduler"]
-    logger.info("--------------Starting the training----------------------------")
+
+ 
     logger.info('Current time is : {}'.format(today_data_time))
     logger.info('Train confing is : {}'.format(train_config))
     logger.info('Train_DL_config is : {}'.format(train_DL_config))
     logger.info('Val_DL_config is : {}'.format(val_DL_config))
     logger.info('Lr_config is : {}'.format(lr_config))
-
 
     train_dataloader = DataLoader(
         train_DL_config["train_hr_dir"],
@@ -208,8 +246,12 @@ if __name__ == "__main__":
         shuffle=val_DL_config["shuffle"],
         num_workers=val_DL_config["num_workers"],
         transform=val_DL_config["transform"],
+        random_blur=False
     )
-    model = Models("unet", "resnet34", "imagenet", 3, 3).to(train_config["device"]) # DnCNN().to(train_config["device"])
+
+    ############### Model Selection ####################################
+    # model = Models("unet", "resnet34", "imagenet", 3, 3).to("cuda") 
+    model = DnCNN().to("cuda")
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=train_config["lr"])
     lr_sch = ReduceLROnPlateau(
@@ -219,6 +261,13 @@ if __name__ == "__main__":
         patience=lr_config["patience"],
         verbose=lr_config["verbose"],
     )
+
+    ########### model architecture #################
+    summary(model, input_size=next(iter(train_dataloader))[0].shape)
+    ################# model architecture #################
+    
+    logger.info("--------------Starting the training----------------------------")
+
     trainer = Trainer(
         model,
         train_dataloader,
@@ -229,6 +278,7 @@ if __name__ == "__main__":
         epochs=train_config["epochs"],
     )
     train_loss, val_loss = trainer.train()
-    trainer.plot_loss(train_loss, val_loss)
+    # plot loss
+    # trainer.plot_loss(train_loss, val_loss)
 
     logger.info("--------------Training is done----------------------------")
