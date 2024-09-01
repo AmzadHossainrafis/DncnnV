@@ -3,6 +3,8 @@ matplotlib
 albumentations
 PyYAML
 numpy 
+mlflow >=2.0
 # Uncomment torchmetrics if you want to train new Model
 # torchmetrics
 flask
+-e .

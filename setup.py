@@ -11,7 +11,7 @@ def get_requirements():
     
 
 
-__version__ = "0.0.0"
+__version__ = "1.0.0"
 
 REPO_NAME = "CAMVID"
 AUTHOR_USER_NAME = "Amzad hossain"
