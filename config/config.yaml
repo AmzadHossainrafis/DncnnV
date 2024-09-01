@@ -5,10 +5,10 @@ Experiment_name:
 
 Train_config: 
   device: cuda
-  batch_size: 32
-  epochs: 200
+  batch_size: 25
+  epochs: 1
   lr: 0.001
-  lr_scheduler: False
+  lr_scheduler: True
   lr_scheduler: 
     mode: 'min'
     factor: 0.1
@@ -19,16 +19,19 @@ Train_config:
   loss : mse
 
 
+
+
+# change dataset directories
 Train_DL_config:
-  train_hr_dir: ./muzzle/train/hr
-  batch_size: 32
+  train_hr_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/train/hr
+  batch_size: 25
   num_workers: 4
   shuffle: True
   transform: True
   
 
 Val_DL_config:
-  val_hr_dir: ./muzzle/val/hr
+  val_hr_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/val/hr
   batch_size: 16
   num_workers: 4
   shuffle: False
@@ -36,22 +39,23 @@ Val_DL_config:
 
 
 Test_DL_config: 
-  test_hr_dir: ./muzzle/train/hr
+  test_hr_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/test/hr
   batch_size: 32
   num_workers: 4
   shuffle: False
   transform: True
 
 Paths : 
-  dataset : ./dataset/
-  log_dir : ./logs
-  model_ckpt: ./artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
-  figs: ./figs/
+  dataset : /media/aps/D826F6E026F6BE96/RnD/dataset/
+  log_dir : ../logs
+  model_ckpt: ../artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
+  figs: ../figs/
 
+# setting t1 image_size to 256 clashes with unet, works with DnCnnv
 Transform:
   t1 :
     p: 1
-    image_size: 256
+    image_size: 512
   t2 :
     p: 1
     image_size: 256
@@ -70,7 +74,7 @@ Transform:
   seed: 42
 
 Test_config: 
-  model_path: ./artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
+  model_path: ../artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth
 
 
 
