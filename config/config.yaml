@@ -6,7 +6,7 @@ Experiment_name:
 Train_config: 
   device: cuda
   batch_size: 25
-  epochs: 1
+  epochs: 200
   lr: 0.001
   lr_scheduler: True
   lr_scheduler: 
