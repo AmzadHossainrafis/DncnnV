@@ -88,7 +88,7 @@ class DataLoader(torch.utils.data.Dataset):
         num_workers=4,
         transform=True,
         random_blur=True,
-        device = device,
+        device=device,
     ):
         """
                  Constructs all the necessary attributes for the DataLoader

@@ -126,7 +126,7 @@ class Trainer:
             self.optimizer.step()
             train_loss_per_epoch.append(loss.item())
             train_.set_description(
-                f"Epoch: {epoch+1} Iter: {idx+1} Loss: {loss.item():.2f}"
+                f"Epoch: {epoch+1} Iter: {idx+1} Lo.2f}"
             )
             train_.set_postfix(loss=loss.item())
         return np.mean(train_loss_per_epoch)

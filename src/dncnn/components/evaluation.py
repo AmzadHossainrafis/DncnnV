@@ -54,6 +54,7 @@ except Exception as e:
 
 eval_model.eval()
 
+
 def evaluate(
     model=eval_model,
     eval_dataloader=train_dataloader,
@@ -144,6 +145,7 @@ def evaluate(
         raise CustomException(f"Error during evaluation: {e}", sys)
 
     return final_loss, final_ssim, final_psnr
+
 
 if __name__ == "__main__":
 
