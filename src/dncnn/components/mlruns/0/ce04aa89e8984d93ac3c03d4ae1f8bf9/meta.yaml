@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/src/dncnn/components/mlruns/0/ce04aa89e8984d93ac3c03d4ae1f8bf9/artifacts
+end_time: 1725345511820
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: ce04aa89e8984d93ac3c03d4ae1f8bf9
+run_name: charming-finch-740
+run_uuid: ce04aa89e8984d93ac3c03d4ae1f8bf9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725345348720
+status: 3
+tags: []
+user_id: aps

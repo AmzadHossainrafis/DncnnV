@@ -1,0 +1,65 @@
+stages:
+  dataloader:
+    cmd: python src/dncnn/dataloader.py --config /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/config/config.yaml
+    deps:
+    - config/config.yaml
+    - src/dncnn/dataloader.py
+    params:
+    - Test_DL_config.test_hr_dir
+    - Train_DL_config.batch_size
+    - Train_DL_config.train_hr_dir
+    - Train_config.batch_size
+    - Train_config.device
+    - Train_config.epochs
+    - Train_config.loss
+    - Train_config.lr
+    - Train_config.lr_scheduler
+    - Train_config.optimizer
+    - Transform.normalization.mean
+    - Transform.normalization.std
+    - Transform.t1.image_size
+    - Transform.t2.blur_limit
+    - Transform.t2.image_size
+    - Val_DL_config.val_hr_dir
+    - model_config.in_channels
+    - model_config.model_name
+    - model_config.out_channels
+    - model_config.start_channels
+
+  model:
+    cmd: python src/dncnn/model.py
+    deps:
+    - config/config.yaml
+    - src/dncnn/model.py
+    params:
+    - model_config.in_channels
+    - model_config.model_name
+    - model_config.out_channels
+    - model_config.start_channels
+    - model_config.depth
+    - model_config.up_scale
+    - model_config.mood
+    - model_config.weight_initilization
+
+  trainer:
+    cmd: python src/dncnn/trainer.py
+    deps:
+    - config/config.yaml
+    - src/dncnn/trainer.py
+    - src/dncnn/components/dataloader.py
+    - src/dncnn/components/model.py
+    params:
+    - Train_config.device
+    - Train_config.batch_size
+    - Train_config.epochs
+    - Train_config.lr
+    - Train_config.lr_scheduler
+    - Train_config.optimizer
+    - Train_config.loss
+    - Train_DL_config.train_hr_dir
+    - Train_DL_config.batch_size
+    - Val_DL_config.val_hr_dir
+    - model_config.in_channels
+    - model_config.model_name
+    - model_config.out_channels
+    - model_config.start_channels

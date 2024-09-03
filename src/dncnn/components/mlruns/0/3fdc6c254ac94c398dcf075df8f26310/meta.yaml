@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/src/dncnn/components/mlruns/0/3fdc6c254ac94c398dcf075df8f26310/artifacts
+end_time: 1725346902386
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 3fdc6c254ac94c398dcf075df8f26310
+run_name: thundering-bee-782
+run_uuid: 3fdc6c254ac94c398dcf075df8f26310
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725346741106
+status: 3
+tags: []
+user_id: aps

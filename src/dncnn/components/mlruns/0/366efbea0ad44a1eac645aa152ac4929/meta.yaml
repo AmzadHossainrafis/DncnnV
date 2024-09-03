@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/src/dncnn/components/mlruns/0/366efbea0ad44a1eac645aa152ac4929/artifacts
+end_time: 1725346617784
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 366efbea0ad44a1eac645aa152ac4929
+run_name: intrigued-skink-98
+run_uuid: 366efbea0ad44a1eac645aa152ac4929
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725346456217
+status: 3
+tags: []
+user_id: aps

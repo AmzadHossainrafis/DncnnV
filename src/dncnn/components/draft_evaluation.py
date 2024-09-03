@@ -12,6 +12,9 @@ import torch
 import mlflow
 import mlflow.pytorch
 
+# alive-progress
+from alive_progress import alive_bar
+
 # Set the config
 eval_config = config["Test_DL_config"]
 
@@ -30,7 +33,7 @@ eval_model = DnCNN()
 
 # Load model weights
 eval_weights = config["evaluation_tracker"]["model_path"]
-eval_model.load_state_dict(torch.load(eval_weights, weights_only=True))
+eval_model.load_state_dict(torch.load(eval_weights))
 eval_model.eval()
 
 def evaluate(model=eval_model,
@@ -60,48 +63,50 @@ def evaluate(model=eval_model,
     num_items = count_items_in_directory(eval_config["test_hr_dir"])
     num_batches = num_items//eval_config["batch_size"]
 
-    eval_bar = tqdm(enumerate(eval_dataloader), total=num_batches, desc="Evaluating")
 
-    with torch.inference_mode():
-        with mlflow.start_run() as run:
-            for idx, (lr, hr) in eval_bar:
-                hr = hr.to(device)
-                lr = lr.to(device)
-                sr = model(lr)
-                
-                # Calculate loss
-                loss = criterion(sr, hr)
-                eval_loss_per_epoch.append(loss.item())
-                
-                # Calculate SSIM and PSNR
-                ssim_score = ssim_metric(sr, hr)
-                psnr_score = psnr_metric(sr, hr)
-                
-                ssim_scores.append(ssim_score.item())
-                psnr_scores.append(psnr_score.item())
+    with alive_bar(num_batches, title="Evaluating", bar='halloween', spinner='dots', force_tty=True) as bar:
+        with torch.inference_mode():
+            with mlflow.start_run() as run:
+                for idx, (lr, hr) in enumerate(eval_dataloader):
+                    hr = hr.to(device)
+                    lr = lr.to(device)
+                    sr = model(lr)
+                    
+                    # Calculate loss
+                    loss = criterion(sr, hr)
+                    eval_loss_per_epoch.append(loss.item())
+                    
+                    # Calculate SSIM and PSNR
+                    ssim_score = ssim_metric(sr, hr)
+                    psnr_score = psnr_metric(sr, hr)
+                    
+                    ssim_scores.append(ssim_score.item())
+                    psnr_scores.append(psnr_score.item())
 
-                # Update tqdm description with current metrics
-                eval_bar.set_description(f"Iter {idx + 1} - Loss: {loss.item():.4f}, SSIM: {ssim_score.item():.4f}, PSNR: {psnr_score.item():.4f}")
+                    # Update alive_bar description with current metrics
+                    bar.text(f"Iter {idx + 1} - Loss: {loss.item():.4f}, SSIM: {ssim_score.item():.4f}, PSNR: {psnr_score.item():.4f}")
+                    
+                    # Log metrics for the current iteration
+                    mlflow.log_metrics({
+                        "Iteration_Loss": loss.item(),
+                        "Iteration_SSIM": ssim_score.item(),
+                        "Iteration_PSNR": psnr_score.item()
+                    }, step=idx + 1)
 
-                # Log metrics for the current iteration
+                    bar()  # Update the bar
+
+                # Calculate and log final metrics
+                final_loss = np.mean(eval_loss_per_epoch)
+                final_ssim = np.mean(ssim_scores)
+                final_psnr = np.mean(psnr_scores)
+
+                print(f"\nFinal Eval Metrics: MSE Loss={final_loss:.4f}, SSIM={final_ssim:.4f}, PSNR={final_psnr:.4f}")
+
                 mlflow.log_metrics({
-                    "Iteration_Loss": loss.item(),
-                    "Iteration_SSIM": ssim_score.item(),
-                    "Iteration_PSNR": psnr_score.item()
-                }, step=idx + 1)
-
-            # Calculate and log final metrics
-            final_loss = np.mean(eval_loss_per_epoch)
-            final_ssim = np.mean(ssim_scores)
-            final_psnr = np.mean(psnr_scores)
-
-            print(f"\nFinal Eval Metrics: MSE Loss={final_loss:.4f}, SSIM={final_ssim:.4f}, PSNR={final_psnr:.4f}")
-
-            mlflow.log_metrics({
-                "Final_Eval_Loss": final_loss,
-                "Final_Eval_SSIM": final_ssim,
-                "Final_Eval_PSNR": final_psnr
-            })
+                    "Final_Loss": final_loss,
+                    "Final_SSIM": final_ssim,
+                    "Final_PSNR": final_psnr
+                })
 
     return final_loss, final_ssim, final_psnr
 

@@ -137,7 +137,7 @@ class Trainer:
             for idx, (lr, hr) in val_bar :
                 hr = hr.to("cuda")
                 lr = lr.to("cuda")
-                sr = self.model(lr)
+                sr = selVal_DL_configf.model(lr)
                 loss = self.criterion(sr, hr)
                 val_loss_per_epoch.append(loss.item())
                 ssim_score.append(self.ssim(sr, hr).item())
