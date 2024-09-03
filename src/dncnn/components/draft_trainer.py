@@ -8,6 +8,7 @@ import numpy as np
 import sys
 from dncnn.utils.logger import logger
 from dncnn.utils.exception import CustomException
+from dncnn.utils.common import count_items_in_directory
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torchmetrics.image import StructuralSimilarityIndexMeasure
 from torchmetrics.image import PeakSignalNoiseRatio 
@@ -23,6 +24,7 @@ from mlflow.models.signature import infer_signature
 
 train_config = config["Train_config"]
 path_config = config["Paths"]
+
 
 
 today_data_time = dt.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
@@ -104,11 +106,15 @@ class Trainer:
     def train_epoch(self, epoch):
         self.model.train()
         train_loss_per_epoch = []
+
+        num_items= count_items_in_directory(train_DL_config["train_hr_dir"])
+        num_batches = num_items//train_DL_config["batch_size"]
+
         train_ = tqdm(
             enumerate(self.train_dataloader),
-            total=len(next(iter(self.train_dataloader)),
+            total=num_batches,
             # leave=False,
-        ))
+        )
         for idx, (lr, hr) in train_:
             hr = hr.to("cuda")
             lr = lr.to("cuda")
@@ -130,14 +136,18 @@ class Trainer:
         val_loss_per_epoch = []
         ssim_score = []
         psnr_score = []
+        
+        num_items = count_items_in_directory(val_DL_config["val_hr_dir"])
+        num_batches = num_items//val_DL_config["batch_size"]
 
         # print(f"val len:{len(self.val_dataloader)}")
-        val_bar = tqdm(enumerate(self.val_dataloader), total=len(self.val_dataloader), desc="validating")
+        val_bar = tqdm(enumerate(self.val_dataloader), total=num_batches, desc="validating")
+
         with torch.no_grad():
             for idx, (lr, hr) in val_bar :
                 hr = hr.to("cuda")
                 lr = lr.to("cuda")
-                sr = selVal_DL_configf.model(lr)
+                sr = self.Val_DL_configf.model(lr)
                 loss = self.criterion(sr, hr)
                 val_loss_per_epoch.append(loss.item())
                 ssim_score.append(self.ssim(sr, hr).item())

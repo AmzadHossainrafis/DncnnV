@@ -10,7 +10,7 @@ from dncnn.utils.logger import logger
 from dncnn.utils.exception import CustomException
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torchmetrics.image import StructuralSimilarityIndexMeasure
-from torchmetrics.image import PeakSignalNoiseRatio 
+from torchmetrics.image import PeakSignalNoiseRatio
 from torchinfo import summary
 
 
@@ -18,7 +18,6 @@ from torchinfo import summary
 import mlflow
 import mlflow.pytorch
 from mlflow.models.signature import infer_signature
-
 
 
 train_config = config["Train_config"]
@@ -99,16 +98,16 @@ class Trainer:
         self.ssim = StructuralSimilarityIndexMeasure().to("cuda")
         self.psnr = PeakSignalNoiseRatio().to("cuda")
 
- 
-    
     def train_epoch(self, epoch):
         self.model.train()
         train_loss_per_epoch = []
         train_ = tqdm(
             enumerate(self.train_dataloader),
-            total=len(next(iter(self.train_dataloader)),
-            # leave=False,
-        ))
+            total=len(
+                next(iter(self.train_dataloader)),
+                # leave=False,
+            ),
+        )
         for idx, (lr, hr) in train_:
             hr = hr.to("cuda")
             lr = lr.to("cuda")
@@ -132,9 +131,13 @@ class Trainer:
         psnr_score = []
 
         # print(f"val len:{len(self.val_dataloader)}")
-        val_bar = tqdm(enumerate(self.val_dataloader), total=len(self.val_dataloader), desc="validating")
+        val_bar = tqdm(
+            enumerate(self.val_dataloader),
+            total=len(self.val_dataloader),
+            desc="validating",
+        )
         with torch.no_grad():
-            for idx, (lr, hr) in val_bar :
+            for idx, (lr, hr) in val_bar:
                 hr = hr.to("cuda")
                 lr = lr.to("cuda")
                 sr = self.model(lr)
@@ -143,8 +146,8 @@ class Trainer:
                 ssim_score.append(self.ssim(sr, hr).item())
                 psnr_score.append(self.psnr(sr, hr).item())
                 # print(f'ssim_score : {np.mean(ssim_score)}')
-                
-        return np.mean(val_loss_per_epoch) , np.mean(ssim_score), np.mean(psnr_score)
+
+        return np.mean(val_loss_per_epoch), np.mean(ssim_score), np.mean(psnr_score)
 
     def train(self):
         # set the exp name
@@ -152,17 +155,18 @@ class Trainer:
 
         train_loss = []
         val_loss = []
-        ssim_score = [] # Structural Similarity Index Measure
+        ssim_score = []  # Structural Similarity Index Measure
         psnr_score = []
 
         best_val_loss = float("inf")
-
 
         with mlflow.start_run() as run:
             for epoch in tqdm(range(self.epochs)):
                 try:
                     train_loss_per_epoch = self.train_epoch(epoch)
-                    val_loss_per_epoch,ssim_value, psnr_value = self.validate_epoch(epoch)
+                    val_loss_per_epoch, ssim_value, psnr_value = self.validate_epoch(
+                        epoch
+                    )
                 except Exception as e:
                     logger.error(f"Error in training {e}")
                     raise CustomException(e, sys)
@@ -189,8 +193,8 @@ class Trainer:
                     logger.info(
                         f"Epoch: {epoch+1} Train Loss: {train_loss_per_epoch} , Val Loss: {val_loss_per_epoch}"
                     )
-                    logger.info((f'SSIM: {ssim_value}'))
-                    logger.info((f'PSNR: {psnr_value}'))
+                    logger.info((f"SSIM: {ssim_value}"))
+                    logger.info((f"PSNR: {psnr_value}"))
 
                     # mlflow metrics
                     mlflow.log_metric("Train Loss", train_loss_per_epoch, step=epoch)
@@ -202,15 +206,12 @@ class Trainer:
                     mlflow.log_param("optimizer", optimizer)
                     mlflow.log_param("Learning Rate", train_config["lr"])
                     mlflow.log_param("Batch Size", train_config["batch_size"])
-                   
-
-                    
 
                     logger.info(
                         f'Current learning rate: {self.optimizer.param_groups[0]["lr"]}'
                     )
 
-        return train_loss, val_loss 
+        return train_loss, val_loss
 
     def plot_loss(self, train_loss, val_loss):
         plt.plot(train_loss, label="Train Loss")
@@ -226,12 +227,11 @@ if __name__ == "__main__":
     val_DL_config = config["Val_DL_config"]
     lr_config = train_config["lr_scheduler"]
 
- 
-    logger.info('Current time is : {}'.format(today_data_time))
-    logger.info('Train confing is : {}'.format(train_config))
-    logger.info('Train_DL_config is : {}'.format(train_DL_config))
-    logger.info('Val_DL_config is : {}'.format(val_DL_config))
-    logger.info('Lr_config is : {}'.format(lr_config))
+    logger.info("Current time is : {}".format(today_data_time))
+    logger.info("Train confing is : {}".format(train_config))
+    logger.info("Train_DL_config is : {}".format(train_DL_config))
+    logger.info("Val_DL_config is : {}".format(val_DL_config))
+    logger.info("Lr_config is : {}".format(lr_config))
 
     train_dataloader = DataLoader(
         train_DL_config["train_hr_dir"],
@@ -246,11 +246,11 @@ if __name__ == "__main__":
         shuffle=val_DL_config["shuffle"],
         num_workers=val_DL_config["num_workers"],
         transform=val_DL_config["transform"],
-        random_blur=False
+        random_blur=False,
     )
 
     ############### Model Selection ####################################
-    # model = Models("unet", "resnet34", "imagenet", 3, 3).to("cuda") 
+    # model = Models("unet", "resnet34", "imagenet", 3, 3).to("cuda")
     model = DnCNN().to("cuda")
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=train_config["lr"])
@@ -265,7 +265,7 @@ if __name__ == "__main__":
     ########### model architecture #################
     summary(model, input_size=next(iter(train_dataloader))[0].shape)
     ################# model architecture #################
-    
+
     logger.info("--------------Starting the training----------------------------")
 
     trainer = Trainer(
