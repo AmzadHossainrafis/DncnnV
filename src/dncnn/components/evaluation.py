@@ -88,7 +88,7 @@ def evaluate(
         raise CustomException(f"Error counting items in directory: {e}", sys)
 
     eval_bar = tqdm(enumerate(eval_dataloader), total=num_batches, desc="Evaluating")
-
+    mlflow.set_experiment("DnCNNV-01")
     try:
         with torch.inference_mode():
             with mlflow.start_run() as run:
