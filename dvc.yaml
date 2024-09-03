@@ -1,5 +1,5 @@
 stages:
-  dataloader:
+  DATALOADER:
     cmd: python src/dncnn/components/dataloader.py --config /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/config/config.yaml
     deps:
     - config/config.yaml
@@ -26,7 +26,7 @@ stages:
     - model_config.out_channels
     - model_config.start_channels
 
-  model:
+  DEFINING_MODEL_ARCHITECTURES:
     cmd: python src/dncnn/components/model.py
     deps:
     - config/config.yaml
@@ -41,7 +41,7 @@ stages:
     - model_config.mood
     - model_config.weight_initilization
 
-  trainer:
+  TRAINING:
     cmd: python src/dncnn/components/trainer.py
     deps:
     - config/config.yaml
@@ -64,7 +64,7 @@ stages:
     - model_config.out_channels
     - model_config.start_channels
 
-  evaluation:
+  EVALUATION:
     cmd: python src/dncnn/components/evaluation.py
     deps:
     - config/config.yaml
