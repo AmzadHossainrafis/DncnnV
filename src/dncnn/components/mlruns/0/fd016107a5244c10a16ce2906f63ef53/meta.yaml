@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/src/dncnn/components/mlruns/0/fd016107a5244c10a16ce2906f63ef53/artifacts
+end_time: 1725353480199
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: fd016107a5244c10a16ce2906f63ef53
+run_name: intrigued-asp-463
+run_uuid: fd016107a5244c10a16ce2906f63ef53
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725353314291
+status: 3
+tags: []
+user_id: aps

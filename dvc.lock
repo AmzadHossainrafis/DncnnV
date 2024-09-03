@@ -1,0 +1,72 @@
+schema: '2.0'
+stages:
+  dataloader:
+    cmd: python src/dncnn/components/dataloader.py --config /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/config/config.yaml
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: 4fab6c5b0f9c10ec22f6669248e9a682
+      size: 2599
+      isexec: true
+    - path: src/dncnn/components/dataloader.py
+      hash: md5
+      md5: 7bf7030f8aad492ef39fa7a23d6a0431
+      size: 5706
+      isexec: true
+    params:
+      params.yaml:
+        Test_DL_config.test_hr_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/val/hr/
+        Train_DL_config.batch_size: 25
+        Train_DL_config.train_hr_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/train/hr/
+        Train_config.batch_size: 25
+        Train_config.device: cuda
+        Train_config.epochs: 1
+        Train_config.loss: mse
+        Train_config.lr: 0.001
+        Train_config.lr_scheduler:
+          mode: min
+          factor: 0.1
+          patience: 20
+          verbose: true
+        Train_config.optimizer: adam
+        Transform.normalization.mean:
+        - 0
+        - 0
+        - 0
+        Transform.normalization.std:
+        - 1.0
+        - 1.0
+        - 1.0
+        Transform.t1.image_size: 512
+        Transform.t2.blur_limit:
+          min: 3
+          max: 7
+        Transform.t2.image_size: 256
+        Val_DL_config.val_hr_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/val/hr/
+        model_config.in_channels: 3
+        model_config.model_name: Dncnn
+        model_config.out_channels: 3
+        model_config.start_channels: 64
+  model:
+    cmd: python src/dncnn/components/model.py
+    deps:
+    - path: config/config.yaml
+      hash: md5
+      md5: 4fab6c5b0f9c10ec22f6669248e9a682
+      size: 2599
+      isexec: true
+    - path: src/dncnn/components/model.py
+      hash: md5
+      md5: 947510e7c4dbaca136f8b54b30ed0717
+      size: 6160
+      isexec: true
+    params:
+      params.yaml:
+        model_config.depth: 12
+        model_config.in_channels: 3
+        model_config.model_name: Dncnn
+        model_config.mood: test
+        model_config.out_channels: 3
+        model_config.start_channels: 64
+        model_config.up_scale: 1
+        model_config.weight_initilization: true

@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/mlruns/295705380365691348/376f8be2bfcc4690a52fae176caaf733/artifacts
+end_time: 1725355270113
+entry_point_name: ''
+experiment_id: '295705380365691348'
+lifecycle_stage: active
+run_id: 376f8be2bfcc4690a52fae176caaf733
+run_name: kindly-snail-231
+run_uuid: 376f8be2bfcc4690a52fae176caaf733
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725355239743
+status: 4
+tags: []
+user_id: aps

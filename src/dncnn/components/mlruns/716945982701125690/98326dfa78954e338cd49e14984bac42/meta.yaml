@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/src/dncnn/components/mlruns/716945982701125690/98326dfa78954e338cd49e14984bac42/artifacts
+end_time: 1725353297867
+entry_point_name: ''
+experiment_id: '716945982701125690'
+lifecycle_stage: active
+run_id: 98326dfa78954e338cd49e14984bac42
+run_name: charming-gnat-221
+run_uuid: 98326dfa78954e338cd49e14984bac42
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725353296514
+status: 4
+tags: []
+user_id: aps

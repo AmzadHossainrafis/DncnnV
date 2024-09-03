@@ -1,5 +1,5 @@
 artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/src/dncnn/components/mlruns/716945982701125690/33940e15163c48a7919a18ebb51a88dd/artifacts
-end_time: null
+end_time: 1725348594457
 entry_point_name: ''
 experiment_id: '716945982701125690'
 lifecycle_stage: active
@@ -10,6 +10,6 @@ source_name: ''
 source_type: 4
 source_version: ''
 start_time: 1725347625728
-status: 1
+status: 4
 tags: []
 user_id: aps

@@ -138,4 +138,5 @@ artifact/model_ckpt/*
 # Test dataset
 muzzle/*
 
-draft_trainer.py
+src/dncnn/componets/draft_trainer.py
+src/dncnn/componets/draft_evaluation.py

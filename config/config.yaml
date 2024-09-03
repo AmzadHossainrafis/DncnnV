@@ -1,12 +1,15 @@
 #Path: config/config.yaml
 Experiment_name: 
-  name : Dncnn # change experiment name for each experiment 
+  name: Dncnn # change experiment name for each experiment 
+
+Default_device:
+  device: cuda
 
 
 Train_config: 
   device: cuda
   batch_size: 25
-  epochs: 200
+  epochs: 1
   lr: 0.001
   lr_scheduler: True
   lr_scheduler: 

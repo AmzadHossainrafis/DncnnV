@@ -8,7 +8,7 @@ import numpy as np
 import sys
 from dncnn.utils.logger import logger
 from dncnn.utils.exception import CustomException
-from dncnn.utils.common import count_items_in_directory
+from dncnn.utils.common import count_items_in_directory, read_config
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torchmetrics.image import StructuralSimilarityIndexMeasure
 from torchmetrics.image import PeakSignalNoiseRatio 
@@ -18,12 +18,12 @@ from torchinfo import summary
 # mlflow
 import mlflow
 import mlflow.pytorch
-from mlflow.models.signature import infer_signature
+# from mlflow.models.signature import infer_signature
 
-
-
+config = read_config("/media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/config/config.yaml")
 train_config = config["Train_config"]
 path_config = config["Paths"]
+device = config["Default_device"]["device"]
 
 
 
@@ -98,8 +98,8 @@ class Trainer:
         self.optimizer = optimizer
         self.lr_scheduler = lr_scheduler
         self.epochs = epochs
-        self.ssim = StructuralSimilarityIndexMeasure().to("cuda")
-        self.psnr = PeakSignalNoiseRatio().to("cuda")
+        self.ssim = StructuralSimilarityIndexMeasure().to(device)
+        self.psnr = PeakSignalNoiseRatio().to(device)
 
  
     
@@ -116,8 +116,8 @@ class Trainer:
             # leave=False,
         )
         for idx, (lr, hr) in train_:
-            hr = hr.to("cuda")
-            lr = lr.to("cuda")
+            hr = hr.to(device)
+            lr = lr.to(device)
             self.optimizer.zero_grad()
             sr = self.model(lr)
             # print(f"sr shape :{sr.shape} and hr shape:{hr.shape}")
@@ -136,17 +136,17 @@ class Trainer:
         val_loss_per_epoch = []
         ssim_score = []
         psnr_score = []
-        
-        num_items = count_items_in_directory(val_DL_config["val_hr_dir"])
-        num_batches = num_items//val_DL_config["batch_size"]
+
+        num_items = count_items_in_directory(config["Val_DL_config"]["val_hr_dir"])
+        num_batches = num_items//config["Val_DL_config"]["batch_size"]
 
         # print(f"val len:{len(self.val_dataloader)}")
         val_bar = tqdm(enumerate(self.val_dataloader), total=num_batches, desc="validating")
 
         with torch.no_grad():
             for idx, (lr, hr) in val_bar :
-                hr = hr.to("cuda")
-                lr = lr.to("cuda")
+                hr = hr.to(device)
+                lr = lr.to(device)
                 sr = self.Val_DL_configf.model(lr)
                 loss = self.criterion(sr, hr)
                 val_loss_per_epoch.append(loss.item())
@@ -260,8 +260,8 @@ if __name__ == "__main__":
     )
 
     ############### Model Selection ####################################
-    # model = Models("unet", "resnet34", "imagenet", 3, 3).to("cuda") 
-    model = DnCNN().to("cuda")
+    # model = Models("unet", "resnet34", "imagenet", 3, 3).to(device) 
+    model = DnCNN().to(device)
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=train_config["lr"])
     lr_sch = ReduceLROnPlateau(

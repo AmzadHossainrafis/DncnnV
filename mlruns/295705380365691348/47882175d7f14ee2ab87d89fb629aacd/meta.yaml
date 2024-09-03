@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/mlruns/295705380365691348/47882175d7f14ee2ab87d89fb629aacd/artifacts
+end_time: 1725356421180
+entry_point_name: ''
+experiment_id: '295705380365691348'
+lifecycle_stage: active
+run_id: 47882175d7f14ee2ab87d89fb629aacd
+run_name: caring-ox-936
+run_uuid: 47882175d7f14ee2ab87d89fb629aacd
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725355445317
+status: 4
+tags: []
+user_id: aps

@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/src/dncnn/components/mlruns/0/99e702982c0b441786f7ead2aa75ae34/artifacts
+end_time: 1725350890917
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 99e702982c0b441786f7ead2aa75ae34
+run_name: aged-bat-491
+run_uuid: 99e702982c0b441786f7ead2aa75ae34
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725350723681
+status: 3
+tags: []
+user_id: aps

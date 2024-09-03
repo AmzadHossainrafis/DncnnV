@@ -1,9 +1,9 @@
 stages:
   dataloader:
-    cmd: python src/dncnn/dataloader.py --config /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/config/config.yaml
+    cmd: python src/dncnn/components/dataloader.py --config /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/config/config.yaml
     deps:
     - config/config.yaml
-    - src/dncnn/dataloader.py
+    - src/dncnn/components/dataloader.py
     params:
     - Test_DL_config.test_hr_dir
     - Train_DL_config.batch_size
@@ -27,10 +27,10 @@ stages:
     - model_config.start_channels
 
   model:
-    cmd: python src/dncnn/model.py
+    cmd: python src/dncnn/components/model.py
     deps:
     - config/config.yaml
-    - src/dncnn/model.py
+    - src/dncnn/components/model.py
     params:
     - model_config.in_channels
     - model_config.model_name
@@ -42,10 +42,10 @@ stages:
     - model_config.weight_initilization
 
   trainer:
-    cmd: python src/dncnn/trainer.py
+    cmd: python src/dncnn/components/trainer.py
     deps:
     - config/config.yaml
-    - src/dncnn/trainer.py
+    - src/dncnn/components/trainer.py
     - src/dncnn/components/dataloader.py
     - src/dncnn/components/model.py
     params:
@@ -63,3 +63,20 @@ stages:
     - model_config.model_name
     - model_config.out_channels
     - model_config.start_channels
+
+  evaluation:
+    cmd: python src/dncnn/components/evaluation.py
+    deps:
+    - config/config.yaml
+    - src/dncnn/components/evaluation.py
+    - src/dncnn/components/dataloader.py
+    - src/dncnn/components/model.py
+    params:
+    - Test_DL_config.test_hr_dir
+    - Test_DL_config.batch_size
+    - Test_DL_config.shuffle
+    - Test_DL_config.num_workers
+    - Test_DL_config.transform
+    - Test_DL_config.random_blur
+    - evaluation_tracker.model_path
+    - evaluation_tracker.device

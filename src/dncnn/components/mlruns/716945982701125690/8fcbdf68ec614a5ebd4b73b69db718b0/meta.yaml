@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/src/dncnn/components/mlruns/716945982701125690/8fcbdf68ec614a5ebd4b73b69db718b0/artifacts
+end_time: 1725350302320
+entry_point_name: ''
+experiment_id: '716945982701125690'
+lifecycle_stage: active
+run_id: 8fcbdf68ec614a5ebd4b73b69db718b0
+run_name: flawless-hare-758
+run_uuid: 8fcbdf68ec614a5ebd4b73b69db718b0
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725349331299
+status: 4
+tags: []
+user_id: aps

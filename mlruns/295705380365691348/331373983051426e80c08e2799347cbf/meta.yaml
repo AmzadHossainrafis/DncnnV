@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/mlruns/295705380365691348/331373983051426e80c08e2799347cbf/artifacts
+end_time: 1725356957049
+entry_point_name: ''
+experiment_id: '295705380365691348'
+lifecycle_stage: active
+run_id: 331373983051426e80c08e2799347cbf
+run_name: skillful-lark-970
+run_uuid: 331373983051426e80c08e2799347cbf
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725356934961
+status: 4
+tags: []
+user_id: aps

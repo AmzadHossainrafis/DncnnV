@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/mlruns/295705380365691348/6df2b0cecce64843a095379feff511f0/artifacts
+end_time: 1725356683380
+entry_point_name: ''
+experiment_id: '295705380365691348'
+lifecycle_stage: active
+run_id: 6df2b0cecce64843a095379feff511f0
+run_name: mysterious-bass-929
+run_uuid: 6df2b0cecce64843a095379feff511f0
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725356669264
+status: 4
+tags: []
+user_id: aps

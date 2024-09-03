@@ -16,6 +16,7 @@ config = read_config("/media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/config/confi
 
 transform_config = config["Transform"]
 seed = transform_config["seed"]
+device = config["Default_device"]["device"]
 
 t2 = A.Compose(
     [
@@ -87,6 +88,7 @@ class DataLoader(torch.utils.data.Dataset):
         num_workers=4,
         transform=True,
         random_blur=True,
+        device = device,
     ):
         """
                  Constructs all the necessary attributes for the DataLoader
@@ -114,6 +116,7 @@ class DataLoader(torch.utils.data.Dataset):
         self.num_workers = num_workers
         self.transform = transform
         self.random_blur = random_blur
+        self.device = device
 
     def __len__(self):
         """
@@ -159,26 +162,26 @@ class DataLoader(torch.utils.data.Dataset):
             hr = np.array(hr)
             lr = np.array(lr)
 
-            hr = torch.tensor(hr, dtype=torch.float32)
-            lr = torch.tensor(lr, dtype=torch.float32)
-        #
+            hr = torch.tensor(hr, dtype=torch.float32).to(self.device)
+            lr = torch.tensor(lr, dtype=torch.float32).to(self.device)
+
         return lr, hr
 
 
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
+# if __name__ == "__main__":
+#     import matplotlib.pyplot as plt
 
-    train_datalader = DataLoader(
-        hr_dir=config["Train_DL_config"]["train_hr_dir"],
-        batch_size=16,
-        shuffle=True,
-        num_workers=4,
-        transform=True,
-    )
-    lr, hr = train_datalader.__getitem__(0)
-    fig, ax = plt.subplots(1, 2)
-    ax[0].imshow(hr[0].permute(1, 2, 0).numpy())
-    ax[0].set_title("High res image")
-    ax[1].imshow(lr[0].permute(1, 2, 0).numpy())
-    ax[1].set_title("Low res image")
-    plt.show()
+#     train_datalader = DataLoader(
+#         hr_dir=config["Train_DL_config"]["train_hr_dir"],
+#         batch_size=16,
+#         shuffle=True,
+#         num_workers=4,
+#         transform=True,
+#     )
+#     lr, hr = train_datalader.__getitem__(0)
+#     fig, ax = plt.subplots(1, 2)
+#     ax[0].imshow(hr[0].permute(1, 2, 0).numpy())
+#     ax[0].set_title("High res image")
+#     ax[1].imshow(lr[0].permute(1, 2, 0).numpy())
+#     ax[1].set_title("Low res image")
+#     plt.show()
