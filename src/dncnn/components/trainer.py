@@ -158,7 +158,7 @@ class Trainer:
 
     def train(self):
         # set the exp name
-        mlflow.set_experiment("DnCNNV-01")
+        mlflow.set_experiment("DnCNNV-01-Train")
 
         train_loss = []
         val_loss = []

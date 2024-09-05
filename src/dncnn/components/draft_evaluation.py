@@ -91,37 +91,37 @@ def evaluate(
 
     try:
         with torch.inference_mode():
-            with mlflow.start_run() as run:
-                for idx, (lr, hr) in eval_bar:
-                    hr = hr.to(device)
-                    lr = lr.to(device)
-                    sr = model(lr)
+            # with mlflow.start_run() as run:
+            for idx, (lr, hr) in eval_bar:
+                hr = hr.to(device)
+                lr = lr.to(device)
+                sr = model(lr)
 
-                    # Calculate loss
-                    loss = criterion(sr, hr)
-                    eval_loss_per_epoch.append(loss.item())
+                # Calculate loss
+                loss = criterion(sr, hr)
+                eval_loss_per_epoch.append(loss.item())
 
-                    # Calculate SSIM and PSNR
-                    ssim_score = ssim_metric(sr, hr)
-                    psnr_score = psnr_metric(sr, hr)
+                # Calculate SSIM and PSNR
+                ssim_score = ssim_metric(sr, hr)
+                psnr_score = psnr_metric(sr, hr)
 
-                    ssim_scores.append(ssim_score.item())
-                    psnr_scores.append(psnr_score.item())
+                ssim_scores.append(ssim_score.item())
+                psnr_scores.append(psnr_score.item())
 
-                    # Update tqdm description with current metrics
-                    eval_bar.set_description(
-                        f"Iter {idx + 1} - Loss: {loss.item():.4f}, SSIM: {ssim_score.item():.4f}, PSNR: {psnr_score.item():.4f}"
-                    )
+                # Update tqdm description with current metrics
+                eval_bar.set_description(
+                    f"Iter {idx + 1} - Loss: {loss.item():.4f}, SSIM: {ssim_score.item():.4f}, PSNR: {psnr_score.item():.4f}"
+                )
 
-                    # Log metrics for the current iteration
-                    mlflow.log_metrics(
-                        {
-                            "Iteration_Loss": loss.item(),
-                            "Iteration_SSIM": ssim_score.item(),
-                            "Iteration_PSNR": psnr_score.item(),
-                        },
-                        step=idx + 1,
-                    )
+                # Log metrics for the current iteration
+                mlflow.log_metrics(
+                    {
+                        "Iteration_Loss": loss.item(),
+                        "Iteration_SSIM": ssim_score.item(),
+                        "Iteration_PSNR": psnr_score.item(),
+                    },
+                    step=idx + 1,
+                )
 
                 # Calculate and log final metrics
                 final_loss = np.mean(eval_loss_per_epoch)

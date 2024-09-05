@@ -88,7 +88,7 @@ def evaluate(
         raise CustomException(f"Error counting items in directory: {e}", sys)
 
     eval_bar = tqdm(enumerate(eval_dataloader), total=num_batches, desc="Evaluating")
-    mlflow.set_experiment("DnCNNV-01")
+    # mlflow.set_experiment("DnCNNV-01")
     try:
         with torch.inference_mode():
             with mlflow.start_run() as run:
@@ -123,22 +123,22 @@ def evaluate(
                         step=idx + 1,
                     )
 
-                # Calculate and log final metrics
-                final_loss = np.mean(eval_loss_per_epoch)
-                final_ssim = np.mean(ssim_scores)
-                final_psnr = np.mean(psnr_scores)
+                    # Calculate and log final metrics
+                    final_loss = np.mean(eval_loss_per_epoch)
+                    final_ssim = np.mean(ssim_scores)
+                    final_psnr = np.mean(psnr_scores)
 
-                logger.info(
-                    f"\nFinal Eval Metrics: MSE Loss={final_loss:.4f}, SSIM={final_ssim:.4f}, PSNR={final_psnr:.4f}"
-                )
+                    logger.info(
+                        f"\nFinal Eval Metrics: MSE Loss={final_loss:.4f}, SSIM={final_ssim:.4f}, PSNR={final_psnr:.4f}"
+                    )
 
-                mlflow.log_metrics(
-                    {
-                        "Final_Eval_Loss": final_loss,
-                        "Final_Eval_SSIM": final_ssim,
-                        "Final_Eval_PSNR": final_psnr,
-                    }
-                )
+                    mlflow.log_metrics(
+                        {
+                            "Final_Eval_Loss": final_loss,
+                            "Final_Eval_SSIM": final_ssim,
+                            "Final_Eval_PSNR": final_psnr,
+                        }
+                    )
 
     except Exception as e:
         logger.error(f"Error during evaluation: {e}")

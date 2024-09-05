@@ -9,7 +9,7 @@ Default_device:
 Train_config: 
   device: cuda
   batch_size: 25
-  epochs: 1
+  epochs: 100
   lr: 0.001
   lr_scheduler: True
   lr_scheduler: 
