@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/src/dncnn/components/mlruns/0/46d696a211e7462bbd96dff32e84e52c/artifacts
+end_time: 1725361697054
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 46d696a211e7462bbd96dff32e84e52c
+run_name: calm-swan-85
+run_uuid: 46d696a211e7462bbd96dff32e84e52c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725361530719
+status: 3
+tags: []
+user_id: aps

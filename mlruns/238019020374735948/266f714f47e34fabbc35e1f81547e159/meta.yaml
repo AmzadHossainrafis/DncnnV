@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/mlruns/238019020374735948/266f714f47e34fabbc35e1f81547e159/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '238019020374735948'
+lifecycle_stage: active
+run_id: 266f714f47e34fabbc35e1f81547e159
+run_name: righteous-conch-423
+run_uuid: 266f714f47e34fabbc35e1f81547e159
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725361840118
+status: 1
+tags: []
+user_id: aps

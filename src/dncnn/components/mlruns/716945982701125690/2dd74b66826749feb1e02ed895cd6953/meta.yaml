@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/src/dncnn/components/mlruns/716945982701125690/2dd74b66826749feb1e02ed895cd6953/artifacts
+end_time: 1725350709550
+entry_point_name: ''
+experiment_id: '716945982701125690'
+lifecycle_stage: active
+run_id: 2dd74b66826749feb1e02ed895cd6953
+run_name: abrasive-wasp-122
+run_uuid: 2dd74b66826749feb1e02ed895cd6953
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725350522665
+status: 4
+tags: []
+user_id: aps

@@ -1,12 +1,15 @@
 #Path: config/config.yaml
 Experiment_name: 
-  name : Dncnn # change experiment name for each experiment 
+  name: Dncnn # change experiment name for each experiment 
+
+Default_device:
+  device: cuda
 
 
 Train_config: 
   device: cuda
   batch_size: 25
-  epochs: 200
+  epochs: 100
   lr: 0.001
   lr_scheduler: True
   lr_scheduler: 
@@ -35,15 +38,19 @@ Val_DL_config:
   batch_size: 16
   num_workers: 4
   shuffle: False
-  transform: True 
+  transform: True
+  random_blur: False 
 
 
 Test_DL_config: 
-  test_hr_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/test/hr/
+  # setting to val as test dir is corrupted in local drive
+  test_hr_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/val/hr/
   batch_size: 32
   num_workers: 4
   shuffle: False
   transform: True
+  random_blur: True
+
 
 Paths : 
   dataset : /media/aps/D826F6E026F6BE96/RnD/dataset/
@@ -64,17 +71,17 @@ Transform:
       max: 7
   normalization:
     mean :
-      - 0.485
-      - 0.456
-      - 0.406
+      - 0
+      - 0
+      - 0
     std :
-      - 0.229
-      - 0.224
-      - 0.225
+      - 1.0
+      - 1.0
+      - 1.0
   seed: 42
 
 Test_config: 
-  model_path: /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/artifact/model_ckpt/
+  model_path: /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/artifact/model_ckpt/Dncnn_best_2024-09-01-17-05-29.pth
 
 
 
@@ -99,15 +106,15 @@ seg_model_config :
 
 evaluation_tracker : 
   model_name: Dncnn
-  model_path: /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/artifact/model_ckpt/
+  model_path: /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/artifact/model_ckpt/Dncnn_best_2024-09-01-17-05-29.pth
   test_dir: /media/aps/D826F6E026F6BE96/RnD/dataset/test/hr/
   batch_size: 32
-
+  device: cuda
 
 
 Prediction_config : 
   model_name: Dncnn
-  model_path: ../artifact/model_ckpt/
+  model_path: /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/artifact/model_ckpt/Dncnn_best_2024-09-01-17-05-29.pth
   transform : 
     p: 1
     image_size: 256

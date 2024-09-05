@@ -1,0 +1,82 @@
+stages:
+  DATALOADER:
+    cmd: python src/dncnn/components/dataloader.py --config /media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/config/config.yaml
+    deps:
+    - config/config.yaml
+    - src/dncnn/components/dataloader.py
+    params:
+    - Test_DL_config.test_hr_dir
+    - Train_DL_config.batch_size
+    - Train_DL_config.train_hr_dir
+    - Train_config.batch_size
+    - Train_config.device
+    - Train_config.epochs
+    - Train_config.loss
+    - Train_config.lr
+    - Train_config.lr_scheduler
+    - Train_config.optimizer
+    - Transform.normalization.mean
+    - Transform.normalization.std
+    - Transform.t1.image_size
+    - Transform.t2.blur_limit
+    - Transform.t2.image_size
+    - Val_DL_config.val_hr_dir
+    - model_config.in_channels
+    - model_config.model_name
+    - model_config.out_channels
+    - model_config.start_channels
+
+  DEFINING_MODEL_ARCHITECTURES:
+    cmd: python src/dncnn/components/model.py
+    deps:
+    - config/config.yaml
+    - src/dncnn/components/model.py
+    params:
+    - model_config.in_channels
+    - model_config.model_name
+    - model_config.out_channels
+    - model_config.start_channels
+    - model_config.depth
+    - model_config.up_scale
+    - model_config.mood
+    - model_config.weight_initilization
+
+  TRAINING:
+    cmd: python src/dncnn/components/trainer.py
+    deps:
+    - config/config.yaml
+    - src/dncnn/components/trainer.py
+    - src/dncnn/components/dataloader.py
+    - src/dncnn/components/model.py
+    params:
+    - Train_config.device
+    - Train_config.batch_size
+    - Train_config.epochs
+    - Train_config.lr
+    - Train_config.lr_scheduler
+    - Train_config.optimizer
+    - Train_config.loss
+    - Train_DL_config.train_hr_dir
+    - Train_DL_config.batch_size
+    - Val_DL_config.val_hr_dir
+    - model_config.in_channels
+    - model_config.model_name
+    - model_config.out_channels
+    - model_config.start_channels
+
+  EVALUATION:
+    cmd: python src/dncnn/components/evaluation.py
+    deps:
+    - config/config.yaml
+    - src/dncnn/components/evaluation.py
+    - src/dncnn/components/dataloader.py
+    - src/dncnn/components/model.py
+    params:
+    - Test_DL_config.test_hr_dir
+    - Test_DL_config.batch_size
+    - Test_DL_config.shuffle
+    - Test_DL_config.num_workers
+    - Test_DL_config.transform
+    - Test_DL_config.random_blur
+    - evaluation_tracker.model_path
+    - evaluation_tracker.device

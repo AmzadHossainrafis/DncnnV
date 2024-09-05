@@ -58,15 +58,14 @@ def plot_val_data(val_dataloader):
     axarr[0].set_title("predicted")
     axarr[1].set_title("input")
     axarr[2].set_title("ground truth ")
-    #de nomalize the lr and hr 
+    # de nomalize the lr and hr
     lr = denormalize(lr.numpy(), mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     hr = denormalize(hr.numpy(), mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     sr = denormalize(sr.numpy(), mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
-    axarr[0].imshow(sr[0].transpose(1, 2, 0)) 
+    axarr[0].imshow(sr[0].transpose(1, 2, 0))
     axarr[1].imshow(hr[0].transpose(1, 2, 0))
     axarr[2].imshow(lr[0].transpose(1, 2, 0))
-
 
     # axarr[1].imshow(lr[0].permute(1, 2, 0).numpy().astype(np.uint8))
     # axarr[0].imshow(sr[0].permute(1, 2, 0).numpy().astype(np.uint8))
@@ -78,9 +77,7 @@ def plot_val_data(val_dataloader):
 def single_prediction(img_dir):
     model = DnCNN().to(train_config["device"])
     model.load_state_dict(
-        torch.load(
-            r"/artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth"
-        )
+        torch.load(r"/artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth")
     )
     model.eval()
     img = Image.open(img_dir)

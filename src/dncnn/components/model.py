@@ -1,12 +1,15 @@
 import torch.nn as nn
 from dncnn.utils.common import read_config
 from dncnn.utils.logger import logger
-#model summary 
-from torchsummary import summary 
+
+# model summary
+from torchsummary import summary
 import segmentation_models_pytorch as smp
 
 # chnage the config file here
-config = read_config(r"/media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/config/config.yaml")
+config = read_config(
+    r"/media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/config/config.yaml"
+)
 model_config = config["model_config"]
 
 
@@ -88,10 +91,8 @@ class DnCNN(nn.Module):
         # for m in layers:
         #     if isinstance(m, nn.Conv2d):
         #         nn.init.kaiming_normal_(m.weight, nonlinearity="relu")
-        
-       
 
-        if weight_initilization : 
+        if weight_initilization:
             logger.info("Weight initilization is on")
             for i in range(up_scale):
                 conv_transpose = nn.ConvTranspose2d(
@@ -99,8 +100,7 @@ class DnCNN(nn.Module):
                 )
                 layers.append(conv_transpose)
 
-
-        if mood =='train':
+        if mood == "train":
             for m in layers:
                 logger.info("Weight initilization is on for layers")
                 if isinstance(m, nn.ConvTranspose2d):
@@ -115,8 +115,6 @@ class DnCNN(nn.Module):
                     nn.init.constant_(m.weight, 1)
                     nn.init.constant_(m.bias, 0)
 
-            
-                
         self.dncnn = nn.Sequential(*layers)
 
     def forward(self, x):
@@ -137,11 +135,10 @@ class DnCNN(nn.Module):
         return out
 
 
-
-class resblock(nn.Module): 
+class resblock(nn.Module):
     def __init__(self) -> None:
-        super(resblock, self).__init__() 
-        '''
+        super(resblock, self).__init__()
+        """
         
         args: 
             finlter: the number of filters in the conv layer
@@ -153,53 +150,56 @@ class resblock(nn.Module):
         
         
         
-        '''
-        finlter = 64 
-        self.conv_1 = nn.Conv2d( finlter, finlter, 3, stride=1, padding=1, bias=False)
+        """
+        finlter = 64
+        self.conv_1 = nn.Conv2d(finlter, finlter, 3, stride=1, padding=1, bias=False)
         self.conv_2 = nn.Conv2d(3, 3, 3, stride=1, padding=1, bias=False)
-        self.batchnorm = nn.BatchNorm2d(3) 
+        self.batchnorm = nn.BatchNorm2d(3)
         self.relu = nn.ReLU(inplace=True)
 
-
-
-    def forward(self, x): 
-        x_1 = x 
+    def forward(self, x):
+        x_1 = x
         x = self.conv_1(x)
         x = self.batchnorm(x)
         x = self.relu(x)
         x = self.conv_2(x)
-        #condition for skip connection 
+        # condition for skip connection
 
         x = x + x_1
         return nn.ReLU(inplace=True)(x)
 
 
-
-class Resnet(nn.Module): 
+class Resnet(nn.Module):
     def __init__(self) -> None:
-        super(Resnet, self).__init__() 
+        super(Resnet, self).__init__()
         self.number_of_resblocks = 5
         filter = 64
-        self.conv_1 = nn.Conv2d(3,filter, 3, stride=1, padding=1, bias=False)
-        self.resblocks = nn.Sequential(*[resblock() for _ in range(self.number_of_resblocks)])
-        self.conv_2 = nn.Conv2d(3, 3, 3, stride=1, padding=1, bias=False) 
+        self.conv_1 = nn.Conv2d(3, filter, 3, stride=1, padding=1, bias=False)
+        self.resblocks = nn.Sequential(
+            *[resblock() for _ in range(self.number_of_resblocks)]
+        )
+        self.conv_2 = nn.Conv2d(3, 3, 3, stride=1, padding=1, bias=False)
 
-    def forward(self, x): 
+    def forward(self, x):
         x = self.conv_1(x)
-        x = self.resblocks(x) 
+        x = self.resblocks(x)
         x = self.conv_2(x)
         return x
 
-class Models(nn.Module): 
-    def __init__(self,arch, encoder_name,encoder_weights, in_channels, out_classes, **kwargs) -> None:
-        super(Models, self).__init__() 
-        self.model = smp.create_model(arch, encoder_name,encoder_weights, in_channels, out_classes, **kwargs)
+
+class Models(nn.Module):
+    def __init__(
+        self, arch, encoder_name, encoder_weights, in_channels, out_classes, **kwargs
+    ) -> None:
+        super(Models, self).__init__()
+        self.model = smp.create_model(
+            arch, encoder_name, encoder_weights, in_channels, out_classes, **kwargs
+        )
 
     def forward(self, x):
-        return self.model(x) 
+        return self.model(x)
 
 
-
-# if __name__ == "__main__": 
+# if __name__ == "__main__":
 #     model = Models("unet", "resnet34", "imagenet", 3, 3).to("cuda")
-#     summary(model, (3, 256, 256)) 
+#     summary(model, (3, 256, 256))

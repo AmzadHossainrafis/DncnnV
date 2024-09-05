@@ -1,83 +1,162 @@
-import torch 
-import numpy as np 
-import matplotlib.pyplot as plt
-from dncnn.components.dataloader import *
+import numpy as np
+import torch
+import sys
+import mlflow
+import mlflow.pytorch
+from dncnn.components.dataloader import DataLoader, config
 from dncnn.components.model import DnCNN
-from dncnn.utils.logger import logger 
-from dncnn.utils.common import denormalize
-from torchmetrics.image import StructuralSimilarityIndexMeasure, PeakSignalNoiseRatio
-from tqdm import tqdm 
+from tqdm import tqdm
+from torchmetrics.image import (
+    StructuralSimilarityIndexMeasure as SSIM,
+    PeakSignalNoiseRatio as PSNR,
+)
+from dncnn.utils.logger import logger
+from dncnn.utils.exception import CustomException, InvalidFormatError
+from dncnn.utils.common import count_items_in_directory
 
-from trainer import train_config
+# Set the config
+try:
+    eval_config = config["Test_DL_config"]
+except KeyError as e:
+    logger.error(f"Configuration key error: {e}")
+    raise CustomException(f"Configuration key error: {e}", sys)
 
-class Evaluation:
-    def __init__(self,data_loader) -> None:
-        self.data_loader = data_loader
-        self.model = DnCNN().to(train_config["device"])
-        self.criterion = None 
-        self.ssim =  StructuralSimilarityIndexMeasure().to(train_config["device"])
-        self.psnr = PeakSignalNoiseRatio().to(train_config["device"])
-        self.model_weights = None 
+# Create data loader
+try:
+    train_dataloader = DataLoader(
+        eval_config["test_hr_dir"],
+        batch_size=eval_config["batch_size"],
+        shuffle=eval_config["shuffle"],
+        num_workers=eval_config["num_workers"],
+        transform=eval_config["transform"],
+        random_blur=eval_config["random_blur"],
+    )
+except KeyError as e:
+    logger.error(f"Configuration key error while creating DataLoader: {e}")
+    raise CustomException(f"Configuration key error: {e}", sys)
+except Exception as e:
+    logger.error(f"Error while creating DataLoader: {e}")
+    raise CustomException(f"Error while creating DataLoader: {e}", sys)
 
-    def test(self):
-        test_loss = []
-        ssim = [] 
-        psnr = [] 
-        self.model = self.model.load_state_dict(torch.load(self.model_weights))
-        evaluation = tqdm(enumerate(self.data_loader), total=len(self.data_loader), leave=False)
-        with torch.no_grad():
-            for idx, (hr, lr) in evaluation:
-                print(f'type of hr: {type(hr)}')
-                hr = hr.to(train_config["device"])
-                lr = lr.to(train_config["device"])
+# Select model
+eval_model = DnCNN()
 
-                sr = self.model(lr)
-                loss = self.criterion(sr, hr)
-                test_loss.append(loss.item())
-                ssim.append(self.ssim(sr,hr))
-                psnr.append(self.psnr(sr,hr))
+# Load model weights
+try:
+    eval_weights = config["evaluation_tracker"]["model_path"]
+    eval_model.load_state_dict(torch.load(eval_weights, weights_only=True))
+except KeyError as e:
+    logger.error(f"Configuration key error while loading model weights: {e}")
+    raise CustomException(f"Configuration key error: {e}", sys)
+except Exception as e:
+    logger.error(f"Error while loading model weights: {e}")
+    raise CustomException(f"Error while loading model weights: {e}", sys)
 
-                evaluation.set_description(f"Test Loss: {loss.item()} Test SSIM: {self.ssim(sr,hr)} Test PSNR: {self.psnr(sr,hr)}")
-                
-            
-        print(f"Test Loss: {np.mean(test_loss)}") 
-        print(f"Test SSIM: {np.mean(ssim)}") 
-        print(f"Test PSNR: {np.mean(psnr)}") 
-
-        logger.info(f"Test Loss: {np.mean(test_loss)}") 
-        logger.info(f"Test SSIM: {np.mean(ssim)}") 
-        logger.info(f"Test PSNR: {np.mean(psnr)}") 
-
-            
-        return test_loss
+eval_model.eval()
 
 
+def evaluate(
+    model=eval_model,
+    eval_dataloader=train_dataloader,
+    device=config["evaluation_tracker"]["device"],
+):
+    """
+    Evaluates the model on the provided dataloader and logs the metrics using MLflow.
 
+    Args:
+        model (torch.nn.Module): The model to be evaluated.
+        eval_dataloader (torch.utils.data.DataLoader): DataLoader containing the evaluation data.
+        device (str): The device to run the evaluation on (e.g., "cuda" or "cpu").
 
-    def plot_val_data(self): 
-        pass 
+    Returns:
+        tuple: A tuple containing the final mean squared error (MSE) loss, SSIM score, and PSNR score.
+    """
+    model = model.to(device)
+    criterion = torch.nn.MSELoss()  # Instantiate MSELoss
+    ssim_metric = SSIM(data_range=1.0).to(device)  # Instantiate SSIM metric
+    psnr_metric = PSNR(data_range=1.0).to(device)  # Instantiate PSNR metric
 
+    eval_loss_per_epoch = []
+    ssim_scores = []
+    psnr_scores = []
+
+    try:
+        num_items = count_items_in_directory(eval_config["test_hr_dir"])
+        num_batches = num_items // eval_config["batch_size"]
+    except Exception as e:
+        logger.error(f"Error counting items in directory: {e}")
+        raise CustomException(f"Error counting items in directory: {e}", sys)
+
+    eval_bar = tqdm(enumerate(eval_dataloader), total=num_batches, desc="Evaluating")
+    # mlflow.set_experiment("DnCNNV-01")
+    try:
+        with torch.inference_mode():
+            with mlflow.start_run() as run:
+                for idx, (lr, hr) in eval_bar:
+                    hr = hr.to(device)
+                    lr = lr.to(device)
+                    sr = model(lr)
+
+                    # Calculate loss
+                    loss = criterion(sr, hr)
+                    eval_loss_per_epoch.append(loss.item())
+
+                    # Calculate SSIM and PSNR
+                    ssim_score = ssim_metric(sr, hr)
+                    psnr_score = psnr_metric(sr, hr)
+
+                    ssim_scores.append(ssim_score.item())
+                    psnr_scores.append(psnr_score.item())
+
+                    # Update tqdm description with current metrics
+                    eval_bar.set_description(
+                        f"Iter {idx + 1} - Loss: {loss.item():.4f}, SSIM: {ssim_score.item():.4f}, PSNR: {psnr_score.item():.4f}"
+                    )
+
+                    # Log metrics for the current iteration
+                    mlflow.log_metrics(
+                        {
+                            "Iteration_Loss": loss.item(),
+                            "Iteration_SSIM": ssim_score.item(),
+                            "Iteration_PSNR": psnr_score.item(),
+                        },
+                        step=idx + 1,
+                    )
+
+                    # Calculate and log final metrics
+                    final_loss = np.mean(eval_loss_per_epoch)
+                    final_ssim = np.mean(ssim_scores)
+                    final_psnr = np.mean(psnr_scores)
+
+                    logger.info(
+                        f"\nFinal Eval Metrics: MSE Loss={final_loss:.4f}, SSIM={final_ssim:.4f}, PSNR={final_psnr:.4f}"
+                    )
+
+                    mlflow.log_metrics(
+                        {
+                            "Final_Eval_Loss": final_loss,
+                            "Final_Eval_SSIM": final_ssim,
+                            "Final_Eval_PSNR": final_psnr,
+                        }
+                    )
+
+    except Exception as e:
+        logger.error(f"Error during evaluation: {e}")
+        raise CustomException(f"Error during evaluation: {e}", sys)
+
+    return final_loss, final_ssim, final_psnr
 
 
 if __name__ == "__main__":
-    val_DL_config = {
-        "val_hr_dir": r"G:\muzzle\val\hr/",
-        "batch_size": 16,
-        "shuffle": False,
-        "num_workers": 0,
-        "transform": None,
-    }
-    dataloader = DataLoader(
-        val_DL_config["val_hr_dir"],
-        batch_size=val_DL_config["batch_size"],
-        shuffle=val_DL_config["shuffle"],
-        num_workers=val_DL_config["num_workers"],
-        transform=val_DL_config["transform"],
-    )
-    print(f"Length of the dataloader: {len(dataloader)}")
-    print(f'type of dataloader: {type(dataloader[0])}')
-    evaluation = Evaluation(dataloader)
-    evaluation.model_weights = r"/artifact/model_ckpt/Dncnn_best_2024-01-02-17-03-27.pth"
-    evaluation.criterion = torch.nn.MSELoss()
-    evaluation.test()
-    # evaluation.plot_val_data()
+
+    logger.info("--------------- STARTNG EVALUATION --------------- ")
+    try:
+        # Run evaluation
+        evaluate(
+            model=eval_model,
+            eval_dataloader=train_dataloader,
+        )
+    except CustomException as e:
+        logger.error(f"Custom exception occurred: {e}")
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {e}")

@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/src/dncnn/components/mlruns/716945982701125690/d4909d5603084b8eab120b84bba8731d/artifacts
+end_time: 1725340810740
+entry_point_name: ''
+experiment_id: '716945982701125690'
+lifecycle_stage: active
+run_id: d4909d5603084b8eab120b84bba8731d
+run_name: intelligent-auk-960
+run_uuid: d4909d5603084b8eab120b84bba8731d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725340488641
+status: 4
+tags: []
+user_id: aps

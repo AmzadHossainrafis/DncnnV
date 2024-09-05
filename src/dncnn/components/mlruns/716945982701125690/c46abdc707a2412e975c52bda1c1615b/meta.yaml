@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/src/dncnn/components/mlruns/716945982701125690/c46abdc707a2412e975c52bda1c1615b/artifacts
+end_time: 1725352930290
+entry_point_name: ''
+experiment_id: '716945982701125690'
+lifecycle_stage: active
+run_id: c46abdc707a2412e975c52bda1c1615b
+run_name: rambunctious-doe-768
+run_uuid: c46abdc707a2412e975c52bda1c1615b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725351954285
+status: 4
+tags: []
+user_id: aps

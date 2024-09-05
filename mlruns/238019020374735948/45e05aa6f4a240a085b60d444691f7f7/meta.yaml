@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/mlruns/238019020374735948/45e05aa6f4a240a085b60d444691f7f7/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '238019020374735948'
+lifecycle_stage: active
+run_id: 45e05aa6f4a240a085b60d444691f7f7
+run_name: nimble-ox-402
+run_uuid: 45e05aa6f4a240a085b60d444691f7f7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725448548162
+status: 1
+tags: []
+user_id: aps

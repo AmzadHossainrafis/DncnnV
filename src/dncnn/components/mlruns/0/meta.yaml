@@ -1,6 +1,7 @@
 artifact_location: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/src/dncnn/components/mlruns/0
 creation_time: 1725184085662
 experiment_id: '0'
-last_update_time: 1725184085662
+last_update_time: 1725364080221
 lifecycle_stage: active
-name: Default
+name: test
+tags: {}

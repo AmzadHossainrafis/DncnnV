@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/src/dncnn/components/mlruns/716945982701125690/f8996e69c56f4ac4af7622e80fb3107f/artifacts
+end_time: 1725351942744
+entry_point_name: ''
+experiment_id: '716945982701125690'
+lifecycle_stage: active
+run_id: f8996e69c56f4ac4af7622e80fb3107f
+run_name: unique-conch-189
+run_uuid: f8996e69c56f4ac4af7622e80fb3107f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725351736206
+status: 4
+tags: []
+user_id: aps

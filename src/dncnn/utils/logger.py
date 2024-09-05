@@ -7,7 +7,7 @@ today = dt.datetime.today().strftime("%Y-%m-%d")
 logging_str = "[%(asctime)s: %(levelname)s: %(module)s: %(message)s]"
 
 
-dir = r"./logs/"
+dir = r"/media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/logs"
 
 
 log_filepath = os.path.join(dir, f"running_logs_{today}.log")

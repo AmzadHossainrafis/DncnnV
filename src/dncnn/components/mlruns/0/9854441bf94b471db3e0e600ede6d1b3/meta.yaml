@@ -1,0 +1,15 @@
+artifact_uri: file:///media/aps/D826F6E026F6BE96/RnD/mlflow/DncnnV/src/dncnn/components/mlruns/0/9854441bf94b471db3e0e600ede6d1b3/artifacts
+end_time: 1725351564143
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 9854441bf94b471db3e0e600ede6d1b3
+run_name: thundering-shoat-158
+run_uuid: 9854441bf94b471db3e0e600ede6d1b3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725351397558
+status: 3
+tags: []
+user_id: aps
